@@ -101,6 +101,7 @@ class AttributeModel extends AbstractModel {
     if (typeConfig.hasName) {
       return internalName;
     }
+
     return typeConfig.name;
   }
 

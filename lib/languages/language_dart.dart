@@ -1,7 +1,10 @@
 import 'package:model_code_generator/languages/abstract_language.dart';
+import 'package:model_code_generator/models/attribute_model.dart';
 import 'package:model_code_generator/models/attribute_type.dart';
+import 'package:model_code_generator/models/attribute_type_config.dart';
 import 'package:model_code_generator/models/entity_model.dart';
 import 'package:model_code_generator/languages/language_type.dart';
+import 'package:model_code_generator/util/config.dart';
 
 ///
 ///
@@ -26,29 +29,55 @@ class LanguageDart extends AbstractLanguage {
   ///
   ///
   @override
-  String getTypeName(AttributeType attributeType) => typeNames[attributeType];
+  String typeName(AttributeType attributeType) => typeNames[attributeType];
+
+  ///
+  ///
+  ///
+  String langType(AttributeModel attribute) {
+    AttributeTypeConfig typeConfig = Config().attributeConfig[attribute.type];
+
+    AttributeTypeConfig internalTypeConfig = attribute.internalType == null
+        ? null
+        : Config().attributeInternalConfig[attribute.internalType];
+
+    if (typeConfig.hasInternalType) {
+      String s = typeName(attribute.type);
+      if (internalTypeConfig.hasName) {
+        s += '<${attribute.internalName}Model>';
+      } else {
+        s += '<${typeName(attribute.internalType)}>';
+      }
+      return s;
+    }
+
+    if (typeConfig.hasName) {
+      return '${attribute.internalName}Model';
+    }
+
+    return typeName(attribute.type);
+  }
 
   ///
   ///
   ///
   @override
   String getModelClass(EntityModel entity) {
-    String code = '';
-    code += 'Dart - Não implementado.';
-    return code;
-
-    /*
-    String className = '${model.name}Model';
+    String className = '${entity.name}Model';
 
     String code = '';
+
+    ///
+    ///
+    ///
     code += 'import \'package:folly_fields/crud/abstract_model.dart\';\n';
     code += '\n';
     code += '///\n';
     code += '///\n';
     code += '///\n';
     code += 'class $className extends AbstractModel {\n';
-    for (AttributeModel attribute in model.attributes) {
-      code += '  ${attribute.getTextType()} ${attribute.name}';
+    for (AttributeModel attribute in entity.attributes) {
+      code += '  ${langType(attribute)} ${attribute.name}';
       if (attribute.hasNullAware) code += ' = ${attribute.nullAware}';
       code += ';\n';
     }
@@ -72,30 +101,34 @@ class LanguageDart extends AbstractLanguage {
     code += '  $className.fromJson(Map<String, dynamic> map)\n';
     code += '      :\n';
 
-    for (AttributeModel attribute in model.attributes) {
+    for (AttributeModel attribute in entity.attributes) {
       String name = attribute.name;
-      switch (attribute.type.type) {
+      switch (attribute.type) {
         case AttributeType.String:
-          code += '        $name = map[\'$name\']';
-          break;
         case AttributeType.Boolean:
-          code += '        $name = map[\'$name\']';
-          break;
         case AttributeType.Integer:
-          code += '        $name = map[\'$name\']';
-          break;
         case AttributeType.Double:
           code += '        $name = map[\'$name\']';
+          if (attribute.hasNullAware) code += ' ?? ${attribute.nullAware}';
           break;
         case AttributeType.Model:
-          code += '        AttributeType.Model - ??????????\n';
+          code += '        $name = map[\'$name\'] != null\n';
+          code += '            ? ';
+          code += '${attribute.internalName}Model.fromJson(map[\'$name\'])\n';
+          code += '            : ';
+          code += attribute.hasNullAware ? attribute.nullAware : 'null';
           break;
         case AttributeType.List:
-          code += '        AttributeType.List - ??????????\n';
+          // TODO - Null-aware??
+          code += '        $name = map[\'$name\'] != null\n';
+          code += '            ? (map[\'$name\'] as List<dynamic>)\n';
+          code += '                ';
+          code += '.map((dynamic map) => ${attribute.internalName}Model';
+          code += '.fromJson(map))\n';
+          code += '                .toList()\n';
+          code += '            : null';
           break;
       }
-
-      if (attribute.hasNullAware) code += ' ?? ${attribute.nullAware}';
 
       code += ',\n';
     }
@@ -122,37 +155,44 @@ class LanguageDart extends AbstractLanguage {
     code += '  @override\n';
     code += '  Map<String, dynamic> toMap() {\n';
     code += '    Map<String, dynamic> map = super.toMap();\n';
-    for (AttributeModel attribute in model.attributes) {
+    for (AttributeModel attribute in entity.attributes) {
       String name = attribute.name;
       code += '    ';
-      if (!attribute.hasNullAware) {
-        code += 'if ($name != null) ';
-      }
 
-      switch (attribute.type.type) {
+      switch (attribute.type) {
         case AttributeType.String:
-          code += 'map[\'$name\'] = $name';
-          break;
         case AttributeType.Boolean:
-          code += 'map[\'$name\'] = $name';
-          break;
         case AttributeType.Integer:
-          code += 'map[\'$name\'] = $name';
-          break;
         case AttributeType.Double:
+          if (!attribute.hasNullAware) {
+            code += 'if ($name != null) ';
+          }
           code += 'map[\'$name\'] = $name';
+          if (attribute.hasNullAware) code += ' ?? ${attribute.nullAware}';
+          code += ';\n';
           break;
         case AttributeType.Model:
-          code += '    AttributeType.Model - ??????????\n';
+          if (!attribute.hasNullAware) {
+            code += 'if ($name != null) ';
+          }
+
+          code += 'map[\'$name\'] = ';
+          code += attribute.hasNullAware
+              ? '($name ?? ${attribute.nullAware})'
+              : name;
+          code += '.toMap();\n';
           break;
         case AttributeType.List:
-          code += '    AttributeType.List - ??????????\n';
+          // TODO - Null-aware??
+          code += 'if ($name != null) {\n';
+
+          code += '      map[\'$name\'] = ';
+          code += '$name.map((${attribute.internalName}Model model) => ';
+          code += 'model.toMap()).toList();\n';
+
+          code += '    }\n';
           break;
       }
-
-      if (attribute.hasNullAware) code += ' ?? ${attribute.nullAware}';
-
-      code += ';\n';
     }
     code += '    return map;\n';
     code += '  }\n';
@@ -165,12 +205,22 @@ class LanguageDart extends AbstractLanguage {
     code += '  ///\n';
     code += '  ///\n';
     code += '  @override\n';
-    code += '  // TODO: implement searchTerm\n';
-    code += '  String get searchTerm => throw UnimplementedError();\n';
+    code += '  String get searchTerm => ${entity.searchterm};\n';
+    code += '\n';
+
+    ///
+    ///
+    ///
+    code += '  ///\n';
+    code += '  ///\n';
+    code += '  ///\n';
+    code += '  @override\n';
+    code += '  String toString() => ${entity.tostring};\n';
+
+    ///
+    ///
+    ///
     code += '}\n';
-
-    _codeController.text = code;
-
- */
+    return code;
   }
 }

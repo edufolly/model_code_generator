@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:folly_fields/fields/dropdown_field.dart';
 import 'package:folly_fields/fields/list_field.dart';
 import 'package:folly_fields/fields/string_field.dart';
+import 'package:folly_fields/widgets/circular_waiting.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:model_code_generator/consumers/attribute_consumer.dart';
@@ -36,18 +37,7 @@ class _HomeState extends State<Home> {
   final TextEditingController _codeController =
       TextEditingController(text: ' ');
 
-  // EntityModel model = EntityModel.fromJson(json.decode(
-  //     '{"name":"Platform","languageType":"Dart","attributes":[{"name":"active",'
-  //     '"type":"Boolean","nullAware":"true"},{"name":"description",'
-  //     '"type":"String"},{"name":"name","type":"String"}]}'));
-
-  EntityModel entity;
-
-  @override
-  void initState() {
-    super.initState();
-    entity = EntityModel();
-  }
+  EntityModel entity = EntityModel();
 
   ///
   ///
@@ -59,8 +49,12 @@ class _HomeState extends State<Home> {
         title: Text('Model Code Generator'),
         actions: <Widget>[
           IconButton(
-            icon: Icon(FontAwesomeIcons.fileImport),
+            icon: Icon(FontAwesomeIcons.solidFileCode),
             onPressed: _jsonImport,
+          ),
+          IconButton(
+            icon: Icon(FontAwesomeIcons.solidTrashAlt),
+            onPressed: _clear,
           ),
         ],
       ),
@@ -127,6 +121,24 @@ class _HomeState extends State<Home> {
                             entity.attributes = value,
                       ),
 
+                      /// Search Term
+                      StringField(
+                        label: 'Termo de Busca*',
+                        initialValue: entity.searchterm,
+                        validator: (String value) =>
+                            value.isEmpty ? 'Informe o termo de busca' : null,
+                        onSaved: (String value) => entity.searchterm = value,
+                      ),
+
+                      /// toString()
+                      StringField(
+                        label: 'toString()*',
+                        initialValue: entity.tostring,
+                        validator: (String value) =>
+                            value.isEmpty ? 'Informe o toString()' : null,
+                        onSaved: (String value) => entity.tostring = value,
+                      ),
+
                       /// Process
                       Padding(
                         padding: const EdgeInsets.all(8.0),
@@ -168,32 +180,46 @@ class _HomeState extends State<Home> {
     );
   }
 
-  void _jsonImport() {
+  ///
+  ///
+  ///
+  void _jsonImport() async {
     String text = ' ';
-    // if (_formKey.currentState.validate()) {
-    //   _formKey.currentState.save();
-    //   Map<String, dynamic> map = entity.toMap();
-    //   text = json.encode(map);
-    // }
+    if (_formKey.currentState.validate()) {
+      _formKey.currentState.save();
+      Map<String, dynamic> map = entity.toMap();
+      JsonEncoder encoder = JsonEncoder.withIndent('  ');
+      text = encoder.convert(map);
+    }
 
-    /*
-{"name":"Platform","languageType":"Dart","attributes":[{"name":"active","type":"Boolean","nullAware":"true"},{"name":"description","type":"String"},{"name":"name","type":"String"}]}
-     */
+    EntityModel newEntity = await Navigator.of(context).push(
+        MaterialPageRoute<EntityModel>(builder: (_) => JsonImport(text: text)));
 
-    Navigator.of(context)
-        .push(MaterialPageRoute<EntityModel>(
-            builder: (_) => JsonImport(text: text)))
-        .then(
-      (EntityModel value) {
-        if (value != null) {
-          print(value.name);
-          setState(() {
-            entity = value;
-          });
-          _formKey.currentState.reset();
-        }
-      },
-    );
+    if (newEntity != null) {
+      await _refresh(newEntity);
+    }
+  }
+
+  ///
+  ///
+  ///
+  void _clear() async {
+    await _refresh(EntityModel());
+  }
+
+  ///
+  ///
+  ///
+  void _refresh(EntityModel newEntity) async {
+    CircularWaiting wait = CircularWaiting(context);
+    wait.show();
+    _codeController.clear();
+    setState(() {
+      entity = newEntity;
+    });
+    await Future<void>.delayed(Duration(milliseconds: 1000));
+    _formKey.currentState.reset();
+    wait.close();
   }
 
   ///

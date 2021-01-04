@@ -14,7 +14,7 @@ abstract class AbstractLanguage {
   ///
   ///
   ///
-  String getTypeName(AttributeType attributeType);
+  String typeName(AttributeType attributeType);
 
   ///
   ///

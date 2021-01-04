@@ -26,7 +26,7 @@ class LanguageJava extends AbstractLanguage {
   ///
   ///
   @override
-  String getTypeName(AttributeType attributeType) => typeNames[attributeType];
+  String typeName(AttributeType attributeType) => typeNames[attributeType];
 
   ///
   ///

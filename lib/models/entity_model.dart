@@ -9,6 +9,8 @@ class EntityModel extends AbstractModel {
   String name;
   LanguageType languageType;
   List<AttributeModel> attributes;
+  String searchterm;
+  String tostring;
 
   ///
   ///
@@ -26,6 +28,8 @@ class EntityModel extends AbstractModel {
             : (map['attributes'] as List<dynamic>)
                 .map((dynamic attribute) => AttributeModel.fromJson(attribute))
                 .toList(),
+        searchterm = map['searchTerm'],
+        tostring = map['toString'],
         super.fromJson(map);
 
   ///
@@ -52,6 +56,10 @@ class EntityModel extends AbstractModel {
           .toList();
     }
 
+    if (searchterm != null) map['searchTerm'] = searchterm;
+
+    if (tostring != null) map['toString'] = tostring;
+
     return map;
   }
 
@@ -60,4 +68,10 @@ class EntityModel extends AbstractModel {
   ///
   @override
   String get searchTerm => name;
+
+  ///
+  ///
+  ///
+  @override
+  String toString() => name;
 }
