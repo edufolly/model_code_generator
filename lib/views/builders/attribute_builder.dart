@@ -34,5 +34,5 @@ class AttributeBuilder extends AbstractUIBuilder<AttributeModel> {
   ///
   ///
   @override
-  Widget getSubtitle(AttributeModel model) => Text(model.type.toString());
+  Widget getSubtitle(AttributeModel model) => Text(model.getTextType());
 }

@@ -9,6 +9,7 @@ class AttributeModel extends AbstractModel {
   AttributeTypeModel type;
   String internalName;
   AttributeTypeModel internalType;
+  String nullAware;
 
   ///
   ///
@@ -27,6 +28,7 @@ class AttributeModel extends AbstractModel {
         internalType = map['internalType'] == null
             ? null
             : AttributeTypeModel.fromJson(map['internalType']),
+        nullAware = map['nullAware'],
         super.fromJson(map);
 
   ///
@@ -44,8 +46,13 @@ class AttributeModel extends AbstractModel {
     Map<String, dynamic> map = super.toMap();
     if (name != null) map['name'] = name;
     if (type != null) map['type'] = type.toMap();
-    if (internalName != null) map['internalName'] = internalName;
+    if (internalName != null && internalName.isNotEmpty) {
+      map['internalName'] = internalName;
+    }
     if (internalType != null) map['internalType'] = internalType.toMap();
+    if (nullAware != null && nullAware.isNotEmpty) {
+      map['nullAware'] = nullAware;
+    }
     return map;
   }
 
@@ -54,4 +61,35 @@ class AttributeModel extends AbstractModel {
   ///
   @override
   String get searchTerm => name;
+
+  ///
+  ///
+  ///
+  @override
+  String toString() => name + ' - ' + getTextType();
+
+  ///
+  ///
+  ///
+  String getTextType() {
+    if (type.hasInternalType) {
+      String s = type.langTypeName;
+      if (internalType.needName) {
+        s += '<$internalName>';
+      } else {
+        s += '<${internalType.langTypeName}>';
+      }
+      return s;
+    }
+
+    if (type.needName) {
+      return internalName;
+    }
+    return type.langTypeName;
+  }
+
+  ///
+  ///
+  ///
+  bool get hasNullAware => nullAware != null && nullAware.isNotEmpty;
 }
