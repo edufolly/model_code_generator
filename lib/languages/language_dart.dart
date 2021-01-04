@@ -166,6 +166,17 @@ class LanguageDart extends AbstractLanguage {
     code += '  ///\n';
     code += '  ///\n';
     code += '  @override\n';
+    code += '  $className fromMulti(Map<String, dynamic> map) =>\n';
+    code += '      $className.fromJson(AbstractModel.fromMultiMap(map));\n';
+    code += '\n';
+
+    ///
+    ///
+    ///
+    code += '  ///\n';
+    code += '  ///\n';
+    code += '  ///\n';
+    code += '  @override\n';
     code += '  Map<String, dynamic> toMap() {\n';
     code += '    Map<String, dynamic> map = super.toMap();\n';
     for (AttributeModel attribute in entity.attributes) {

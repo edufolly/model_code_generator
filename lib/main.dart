@@ -20,7 +20,7 @@ void main() {
 }
 
 ///
-///
+/// TODO - Implementar o redutor de tamanho de envio.
 ///
 class ModelCodeGenerator extends StatelessWidget {
   ///
