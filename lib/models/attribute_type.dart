@@ -8,6 +8,7 @@ enum AttributeType {
   Double,
   Model,
   List,
+  IconData,
 }
 
 ///
@@ -28,6 +29,8 @@ class AttributeTypeHelper {
         return AttributeType.Model;
       case 'List':
         return AttributeType.List;
+      case 'IconData':
+        return AttributeType.IconData;
       default:
         return null;
     }

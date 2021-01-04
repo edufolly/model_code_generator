@@ -17,6 +17,7 @@ class LanguageDart extends AbstractLanguage {
     AttributeType.Double: 'double',
     AttributeType.Model: null,
     AttributeType.List: 'List',
+    AttributeType.IconData: 'IconData',
   };
 
   ///
@@ -71,6 +72,14 @@ class LanguageDart extends AbstractLanguage {
     ///
     ///
     code += 'import \'package:folly_fields/crud/abstract_model.dart\';\n';
+
+    for (AttributeModel attribute in entity.attributes) {
+      if (attribute.type == AttributeType.IconData) {
+        code += 'import \'package:folly_fields/util/icon_helper.dart\';\n';
+        break;
+      }
+    }
+
     code += '\n';
     code += '///\n';
     code += '///\n';
@@ -127,6 +136,10 @@ class LanguageDart extends AbstractLanguage {
           code += '.fromJson(map))\n';
           code += '                .toList()\n';
           code += '            : null';
+          break;
+        case AttributeType.IconData:
+          // TODO - Null-aware??
+          code += '        $name = IconHelper.iconData(map[\'$name\'])';
           break;
       }
 
@@ -185,11 +198,14 @@ class LanguageDart extends AbstractLanguage {
         case AttributeType.List:
           // TODO - Null-aware??
           code += 'if ($name != null) {\n';
-
           code += '      map[\'$name\'] = ';
           code += '$name.map((${attribute.internalName}Model model) => ';
           code += 'model.toMap()).toList();\n';
-
+          code += '    }\n';
+          break;
+        case AttributeType.IconData:
+          code += 'if ($name != null) {\n';
+          code += '      map[\'$name\'] = IconHelper.iconName($name);\n';
           code += '    }\n';
           break;
       }

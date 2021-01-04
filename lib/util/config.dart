@@ -87,6 +87,11 @@ class Config extends AbstractConfig {
       hasInternalType: true,
       hasName: false,
     ),
+    AttributeType.IconData: AttributeTypeConfig(
+      name: 'IconData',
+      hasInternalType: false,
+      hasName: false,
+    )
   };
 
   ///
