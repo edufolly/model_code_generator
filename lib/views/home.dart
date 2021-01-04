@@ -1,20 +1,29 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:folly_fields/fields/dropdown_field.dart';
 import 'package:folly_fields/fields/list_field.dart';
 import 'package:folly_fields/fields/string_field.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:model_code_generator/consumers/attribute_consumer.dart';
+import 'package:model_code_generator/languages/abstract_language.dart';
 import 'package:model_code_generator/models/attribute_model.dart';
-import 'package:model_code_generator/models/attribute_type_model.dart';
 import 'package:model_code_generator/models/entity_model.dart';
+import 'package:model_code_generator/languages/language_type.dart';
+import 'package:model_code_generator/util/config.dart';
 import 'package:model_code_generator/views/builders/attribute_builder.dart';
 import 'package:model_code_generator/views/edit/attribute_edit.dart';
+import 'package:model_code_generator/views/json_import.dart';
 
 ///
 ///
 ///
 class Home extends StatefulWidget {
+  ///
+  ///
+  ///
   @override
   _HomeState createState() => _HomeState();
 }
@@ -24,20 +33,21 @@ class Home extends StatefulWidget {
 ///
 class _HomeState extends State<Home> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final TextEditingController _codeController = TextEditingController();
+  final TextEditingController _codeController =
+      TextEditingController(text: ' ');
 
-  EntityModel model = EntityModel.fromJson(json.decode(
-      '{"name":"Company","attributes":[{"name":"active","type":{'
-          '"name":"Boolean","type":"AttributeType.Boolean","langTypeName":"bool",'
-          '"hasInternalType":false,"needName":false},"nullAware":"true"},'
-          '{"name":"cnpj","type":{"name":"String","type":"AttributeType.String",'
-          '"langTypeName":"String","hasInternalType":false,"needName":false}},'
-          '{"name":"companyName","type":{"name":"String","type":"AttributeType.String",'
-          '"langTypeName":"String","hasInternalType":false,"needName":false}},'
-          '{"name":"fancyName","type":{"name":"String","type":"AttributeType.String",'
-          '"langTypeName":"String","hasInternalType":false,"needName":false}}]}'));
+  // EntityModel model = EntityModel.fromJson(json.decode(
+  //     '{"name":"Platform","languageType":"Dart","attributes":[{"name":"active",'
+  //     '"type":"Boolean","nullAware":"true"},{"name":"description",'
+  //     '"type":"String"},{"name":"name","type":"String"}]}'));
 
-  // EntityModel model = EntityModel();
+  EntityModel entity;
+
+  @override
+  void initState() {
+    super.initState();
+    entity = EntityModel();
+  }
 
   ///
   ///
@@ -47,11 +57,17 @@ class _HomeState extends State<Home> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Model Code Generator'),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(FontAwesomeIcons.fileImport),
+            onPressed: _jsonImport,
+          ),
+        ],
       ),
-      body: Form(
-        key: _formKey,
-        child: Padding(
-          padding: const EdgeInsets.all(18.0),
+      body: Padding(
+        padding: const EdgeInsets.all(18.0),
+        child: Form(
+          key: _formKey,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -60,19 +76,31 @@ class _HomeState extends State<Home> {
                 flex: 1,
                 child: SingleChildScrollView(
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: <Widget>[
+                      /// Language
+                      DropdownField<LanguageType>(
+                        label: 'Linguagem*',
+                        items: LanguageTypeHelper.languageItems,
+                        initialValue: entity.languageType ?? LanguageType.Dart,
+                        validator: (LanguageType value) =>
+                            value == null ? 'Informe a linguagem' : null,
+                        onSaved: (LanguageType value) =>
+                            entity.languageType = value,
+                      ),
+
                       /// Name
                       StringField(
                         label: 'Nome*',
-                        initialValue: model.name,
+                        initialValue: entity.name,
                         validator: (String value) =>
                             value.isEmpty ? 'Informe o nome' : null,
-                        onSaved: (String value) => model.name = value,
+                        onSaved: (String value) => entity.name = value,
                       ),
 
                       /// Attributes
                       ListField<AttributeModel, AttributeBuilder>(
-                        initialValue: model.attributes ?? <AttributeModel>[],
+                        initialValue: entity.attributes ?? <AttributeModel>[],
                         uiBuilder: AttributeBuilder(null),
                         routeAddBuilder: (
                           BuildContext context,
@@ -96,14 +124,18 @@ class _HomeState extends State<Home> {
                                 ? 'Informe os atributos'
                                 : null,
                         onSaved: (List<AttributeModel> value) =>
-                            model.attributes = value,
+                            entity.attributes = value,
                       ),
 
                       /// Process
-                      RaisedButton.icon(
-                        onPressed: _process,
-                        icon: Icon(Icons.send),
-                        label: Text('Processar'),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: RaisedButton.icon(
+                          onPressed: _process,
+                          icon: Icon(Icons.send),
+                          label: Text('PROCESSAR'),
+                          padding: const EdgeInsets.all(20.0),
+                        ),
                       ),
                     ],
                   ),
@@ -111,23 +143,56 @@ class _HomeState extends State<Home> {
               ),
               Flexible(
                 flex: 1,
-                child: TextFormField(
-                  decoration: InputDecoration(
-                    labelText: 'Código',
-                    border: OutlineInputBorder(),
-                    counterText: '',
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: TextFormField(
+                    decoration: InputDecoration(
+                      labelText: 'Código',
+                      border: OutlineInputBorder(),
+                      counterText: '',
+                    ),
+                    controller: _codeController,
+                    keyboardType: TextInputType.multiline,
+                    minLines: 30,
+                    maxLines: 999,
+                    style: GoogleFonts.firaCode(),
+                    enableSuggestions: false,
+                    textAlignVertical: TextAlignVertical.top,
                   ),
-                  controller: _codeController,
-                  keyboardType: TextInputType.multiline,
-                  minLines: 30,
-                  maxLines: 999,
-                  style: GoogleFonts.firaCode(),
                 ),
               ),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  void _jsonImport() {
+    String text = ' ';
+    // if (_formKey.currentState.validate()) {
+    //   _formKey.currentState.save();
+    //   Map<String, dynamic> map = entity.toMap();
+    //   text = json.encode(map);
+    // }
+
+    /*
+{"name":"Platform","languageType":"Dart","attributes":[{"name":"active","type":"Boolean","nullAware":"true"},{"name":"description","type":"String"},{"name":"name","type":"String"}]}
+     */
+
+    Navigator.of(context)
+        .push(MaterialPageRoute<EntityModel>(
+            builder: (_) => JsonImport(text: text)))
+        .then(
+      (EntityModel value) {
+        if (value != null) {
+          print(value.name);
+          setState(() {
+            entity = value;
+          });
+          _formKey.currentState.reset();
+        }
+      },
     );
   }
 
@@ -141,140 +206,11 @@ class _HomeState extends State<Home> {
 
     _formKey.currentState.save();
 
-    Map<String, dynamic> map = model.toMap();
+    Map<String, dynamic> map = entity.toMap();
     print(json.encode(map));
 
-    String className = '${model.name}Model';
+    AbstractLanguage language = Config().languages[entity.languageType];
 
-    String code = '';
-    code += 'import \'package:folly_fields/crud/abstract_model.dart\';\n';
-    code += '\n';
-    code += '///\n';
-    code += '///\n';
-    code += '///\n';
-    code += 'class $className extends AbstractModel {\n';
-    for (AttributeModel attribute in model.attributes) {
-      code += '  ${attribute.getTextType()} ${attribute.name}';
-      if (attribute.hasNullAware) code += ' = ${attribute.nullAware}';
-      code += ';\n';
-    }
-    code += '\n';
-
-    ///
-    ///
-    ///
-    code += '  ///\n';
-    code += '  ///\n';
-    code += '  ///\n';
-    code += '  $className();\n';
-    code += '\n';
-
-    ///
-    ///
-    ///
-    code += '  ///\n';
-    code += '  ///\n';
-    code += '  ///\n';
-    code += '  $className.fromJson(Map<String, dynamic> map)\n';
-    code += '      :\n';
-
-    for (AttributeModel attribute in model.attributes) {
-      String name = attribute.name;
-      switch (attribute.type.type) {
-        case AttributeType.String:
-          code += '        $name = map[\'$name\']';
-          break;
-        case AttributeType.Boolean:
-          code += '        $name = map[\'$name\']';
-          break;
-        case AttributeType.Integer:
-          code += '        $name = map[\'$name\']';
-          break;
-        case AttributeType.Double:
-          code += '        $name = map[\'$name\']';
-          break;
-        case AttributeType.Model:
-          code += '        AttributeType.Model - ??????????\n';
-          break;
-        case AttributeType.List:
-          code += '        AttributeType.List - ??????????\n';
-          break;
-      }
-
-      if (attribute.hasNullAware) code += ' ?? ${attribute.nullAware}';
-
-      code += ',\n';
-    }
-    code += '        super.fromJson(map);\n';
-    code += '\n';
-
-    ///
-    ///
-    ///
-    code += '  ///\n';
-    code += '  ///\n';
-    code += '  ///\n';
-    code += '  @override\n';
-    code += '  $className fromJson(Map<String, dynamic> map) =>\n';
-    code += '      $className.fromJson(map);\n';
-    code += '\n';
-
-    ///
-    ///
-    ///
-    code += '  ///\n';
-    code += '  ///\n';
-    code += '  ///\n';
-    code += '  @override\n';
-    code += '  Map<String, dynamic> toMap() {\n';
-    code += '    Map<String, dynamic> map = super.toMap();\n';
-    for (AttributeModel attribute in model.attributes) {
-      String name = attribute.name;
-      code += '    ';
-      if (!attribute.hasNullAware) {
-        code += 'if ($name != null) ';
-      }
-
-      switch (attribute.type.type) {
-        case AttributeType.String:
-          code += 'map[\'$name\'] = $name';
-          break;
-        case AttributeType.Boolean:
-          code += 'map[\'$name\'] = $name';
-          break;
-        case AttributeType.Integer:
-          code += 'map[\'$name\'] = $name';
-          break;
-        case AttributeType.Double:
-          code += 'map[\'$name\'] = $name';
-          break;
-        case AttributeType.Model:
-          code += '    AttributeType.Model - ??????????\n';
-          break;
-        case AttributeType.List:
-          code += '    AttributeType.List - ??????????\n';
-          break;
-      }
-
-      if (attribute.hasNullAware) code += ' ?? ${attribute.nullAware}';
-
-      code += ';\n';
-    }
-    code += '    return map;\n';
-    code += '  }\n';
-    code += '\n';
-
-    ///
-    ///
-    ///
-    code += '  ///\n';
-    code += '  ///\n';
-    code += '  ///\n';
-    code += '  @override\n';
-    code += '  // TODO: implement searchTerm\n';
-    code += '  String get searchTerm => throw UnimplementedError();\n';
-    code += '}\n';
-
-    _codeController.text = code;
+    _codeController.text = language.getModelClass(entity);
   }
 }

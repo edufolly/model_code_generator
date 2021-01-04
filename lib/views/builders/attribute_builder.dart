@@ -34,5 +34,7 @@ class AttributeBuilder extends AbstractUIBuilder<AttributeModel> {
   ///
   ///
   @override
-  Widget getSubtitle(AttributeModel model) => Text(model.getTextType());
+  Widget getSubtitle(AttributeModel model) => Text(
+        model.textType + (model.hasNullAware ? ' (${model.nullAware})' : ''),
+      );
 }
