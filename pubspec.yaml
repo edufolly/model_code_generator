@@ -24,15 +24,13 @@ dependencies:
   google_fonts: 1.1.1
   # https://github.com/edufolly/folly_fields
   folly_fields:
-    path: ../folly_fields
-#    git:
-#      url: git://github.com/edufolly/folly_fields.git
-
+    # path: ../folly_fields
+    git:
+      url: git://github.com/edufolly/folly_fields.git
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
 flutter:
-
   uses-material-design: true
