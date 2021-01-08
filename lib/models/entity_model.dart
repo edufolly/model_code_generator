@@ -8,6 +8,7 @@ import 'package:model_code_generator/languages/language_type.dart';
 class EntityModel extends AbstractModel {
   String name;
   LanguageType languageType;
+  String packagePath;
   List<AttributeModel> attributes;
   String searchterm;
   String tostring;
@@ -23,6 +24,7 @@ class EntityModel extends AbstractModel {
   EntityModel.fromJson(Map<String, dynamic> map)
       : name = map['name'],
         languageType = LanguageTypeHelper.parse(map['languageType']),
+        packagePath = map['packagePath'],
         attributes = map['attributes'] == null
             ? null
             : (map['attributes'] as List<dynamic>)
@@ -42,6 +44,13 @@ class EntityModel extends AbstractModel {
   ///
   ///
   @override
+  EntityModel fromMulti(Map<String, dynamic> map) =>
+      EntityModel.fromJson(AbstractModel.fromMultiMap(map));
+
+  ///
+  ///
+  ///
+  @override
   Map<String, dynamic> toMap() {
     Map<String, dynamic> map = super.toMap();
     if (name != null) map['name'] = name;
@@ -49,6 +58,8 @@ class EntityModel extends AbstractModel {
     if (languageType != null) {
       map['languageType'] = LanguageTypeHelper.string(languageType);
     }
+
+    if (packagePath != null) map['packagePath'] = packagePath;
 
     if (attributes != null) {
       map['attributes'] = attributes

@@ -6,12 +6,10 @@ on:
 jobs:
   build:
     name: Build Web
-    env:
-      my_secret: ${{secrets.commit_secret}}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2.3.4
-      - uses: subosito/flutter-action@v1.4.0
+      - uses: actions/checkout@v2
+      - uses: subosito/flutter-action@v1
         with:
           channel: 'beta'
       - run: flutter config --enable-web
@@ -28,5 +26,5 @@ jobs:
           git remote add origin https://${{secrets.commit_secret}}@github.com/edufolly/model_code_generator.git
           git checkout -b gh-pages
           git add --all
-          git commit -m "Publishing the static page."
+          git commit -m "Publishing the static page ($GITHUB_RUN_NUMBER)."
           git push origin gh-pages -f

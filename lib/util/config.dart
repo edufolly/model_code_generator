@@ -77,6 +77,11 @@ class Config extends AbstractConfig {
       hasInternalType: false,
       hasName: false,
     ),
+    AttributeType.Object: AttributeTypeConfig(
+      name: 'Object',
+      hasInternalType: false,
+      hasName: false,
+    ),
     AttributeType.Model: AttributeTypeConfig(
       name: 'Model',
       hasInternalType: false,

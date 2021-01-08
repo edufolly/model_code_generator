@@ -9,7 +9,6 @@ class AttributeTypeConfig extends AbstractModel {
   final bool hasInternalType;
   final bool hasName;
 
-
   ///
   ///
   ///
@@ -34,6 +33,13 @@ class AttributeTypeConfig extends AbstractModel {
   @override
   AttributeTypeConfig fromJson(Map<String, dynamic> map) =>
       AttributeTypeConfig.fromJson(map);
+
+  ///
+  ///
+  ///
+  @override
+  AttributeTypeConfig fromMulti(Map<String, dynamic> map) =>
+      AttributeTypeConfig.fromJson(AbstractModel.fromMultiMap(map));
 
   ///
   ///

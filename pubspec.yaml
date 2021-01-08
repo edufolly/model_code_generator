@@ -3,7 +3,7 @@ description: A new project.
 
 publish_to: 'none'
 
-version: 0.0.2+2
+version: 0.0.3+3
 
 environment:
   sdk: ">=2.9.0 <3.0.0"
@@ -24,9 +24,9 @@ dependencies:
   google_fonts: 1.1.1
   # https://github.com/edufolly/folly_fields
   folly_fields:
-#     path: ../folly_fields
-    git:
-      url: git://github.com/edufolly/folly_fields.git
+    path: ../folly_fields
+#    git:
+#      url: git://github.com/edufolly/folly_fields.git
 
 dev_dependencies:
   flutter_test:

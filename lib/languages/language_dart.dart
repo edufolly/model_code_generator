@@ -1,3 +1,6 @@
+import 'dart:collection';
+
+import 'package:folly_fields/util/string_utils.dart';
 import 'package:model_code_generator/languages/abstract_language.dart';
 import 'package:model_code_generator/models/attribute_model.dart';
 import 'package:model_code_generator/models/attribute_type.dart';
@@ -15,6 +18,7 @@ class LanguageDart extends AbstractLanguage {
     AttributeType.Boolean: 'bool',
     AttributeType.Integer: 'int',
     AttributeType.Double: 'double',
+    AttributeType.Object: 'dynamic',
     AttributeType.Model: null,
     AttributeType.List: 'List',
     AttributeType.IconData: 'IconData',
@@ -59,6 +63,8 @@ class LanguageDart extends AbstractLanguage {
     return typeName(attribute.type);
   }
 
+  SplayTreeSet<String> imports = SplayTreeSet<String>();
+
   ///
   ///
   ///
@@ -68,17 +74,34 @@ class LanguageDart extends AbstractLanguage {
 
     String code = '';
 
-    ///
-    ///
-    ///
-    code += 'import \'package:folly_fields/crud/abstract_model.dart\';\n';
+    imports.clear();
 
+    imports.add('import \'package:folly_fields/crud/abstract_model.dart\';\n');
+
+    ///
+    ///
+    ///
     for (AttributeModel attribute in entity.attributes) {
       if (attribute.type == AttributeType.IconData) {
-        code += 'import \'package:folly_fields/util/icon_helper.dart\';\n';
+        imports.add('import \'package:flutter/material.dart\';\n');
+        imports.add('import \'package:folly_fields/util/icon_helper.dart\';\n');
         break;
       }
     }
+
+    String packagePath = entity.packagePath;
+
+    if (!packagePath.endsWith('/')) packagePath += '/';
+
+    for (AttributeModel attribute in entity.attributes) {
+      if (attribute.type == AttributeType.Model ||
+          attribute.internalType == AttributeType.Model) {
+        String filename = StringUtils.pascal2Snake(attribute.internalName);
+        imports.add('import \'package:$packagePath$filename\_model.dart\';\n');
+      }
+    }
+
+    code += imports.join();
 
     code += '\n';
     code += '///\n';
@@ -117,6 +140,7 @@ class LanguageDart extends AbstractLanguage {
         case AttributeType.Boolean:
         case AttributeType.Integer:
         case AttributeType.Double:
+        case AttributeType.Object:
           code += '        $name = map[\'$name\']';
           if (attribute.hasNullAware) code += ' ?? ${attribute.nullAware}';
           break;
@@ -129,13 +153,18 @@ class LanguageDart extends AbstractLanguage {
           break;
         case AttributeType.List:
           // TODO - Null-aware??
-          code += '        $name = map[\'$name\'] != null\n';
-          code += '            ? (map[\'$name\'] as List<dynamic>)\n';
-          code += '                ';
-          code += '.map((dynamic map) => ${attribute.internalName}Model';
-          code += '.fromJson(map))\n';
-          code += '                .toList()\n';
-          code += '            : null';
+          if (attribute.internalType == AttributeType.Model) {
+            code += '        $name = map[\'$name\'] != null\n';
+            code += '            ? (map[\'$name\'] as List<dynamic>)\n';
+            code += '                ';
+            code += '.map((dynamic map) => ${attribute.internalName}Model';
+            code += '.fromJson(map))\n';
+            code += '                .toList()\n';
+            code += '            : null';
+          } else {
+            // TODO - Comportamento para classes que não sejam model.
+            code += '// TODO - Implement: $name - ${attribute.internalType}';
+          }
           break;
         case AttributeType.IconData:
           // TODO - Null-aware??
@@ -188,6 +217,7 @@ class LanguageDart extends AbstractLanguage {
         case AttributeType.Boolean:
         case AttributeType.Integer:
         case AttributeType.Double:
+        case AttributeType.Object:
           if (!attribute.hasNullAware) {
             code += 'if ($name != null) ';
           }
@@ -208,11 +238,16 @@ class LanguageDart extends AbstractLanguage {
           break;
         case AttributeType.List:
           // TODO - Null-aware??
-          code += 'if ($name != null) {\n';
-          code += '      map[\'$name\'] = ';
-          code += '$name.map((${attribute.internalName}Model model) => ';
-          code += 'model.toMap()).toList();\n';
-          code += '    }\n';
+          if (attribute.internalType == AttributeType.Model) {
+            code += 'if ($name != null) {\n';
+            code += '      map[\'$name\'] = ';
+            code += '$name.map((${attribute.internalName}Model model) => ';
+            code += 'model.toMap()).toList();\n';
+            code += '    }\n';
+          } else {
+            // TODO - Comportamento para classes que não sejam model.
+            code += '// TODO - Implement: $name - ${attribute.internalType}';
+          }
           break;
         case AttributeType.IconData:
           code += 'if ($name != null) {\n';

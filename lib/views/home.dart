@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:folly_fields/fields/dropdown_field.dart';
 import 'package:folly_fields/fields/list_field.dart';
 import 'package:folly_fields/fields/string_field.dart';
+import 'package:folly_fields/util/string_utils.dart';
 import 'package:folly_fields/widgets/circular_waiting.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -48,9 +49,15 @@ class _HomeState extends State<Home> {
       appBar: AppBar(
         title: Text('Model Code Generator'),
         actions: <Widget>[
-          IconButton(
-            icon: Icon(FontAwesomeIcons.solidFileCode),
-            onPressed: _jsonImport,
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 14.0),
+            child: FlatButton(
+              child: Text('JSON'),
+              onPressed: _jsonImport,
+              color: Theme.of(context).colorScheme.onBackground,
+              colorBrightness: Brightness.light,
+              // padding: const EdgeInsets.all(0),
+            ),
           ),
           IconButton(
             icon: Icon(FontAwesomeIcons.solidTrashAlt),
@@ -83,12 +90,24 @@ class _HomeState extends State<Home> {
                             entity.languageType = value,
                       ),
 
+                      /// Package Path
+                      StringField(
+                        label: 'Caminho do Pacote*',
+                        initialValue: entity.packagePath,
+                        validator: (String value) => value.isEmpty
+                            ? 'Informe o caminho do pacote'
+                            : null,
+                        onSaved: (String value) => entity.packagePath = value,
+                      ),
+
                       /// Name
                       StringField(
                         label: 'Nome*',
                         initialValue: entity.name,
                         validator: (String value) =>
-                            value.isEmpty ? 'Informe o nome' : null,
+                            StringUtils.isPascalCase(value)
+                                ? null
+                                : 'Informe um nome válido. (PascalCase)',
                         onSaved: (String value) => entity.name = value,
                       ),
 
@@ -231,9 +250,6 @@ class _HomeState extends State<Home> {
     }
 
     _formKey.currentState.save();
-
-    Map<String, dynamic> map = entity.toMap();
-    print(json.encode(map));
 
     AbstractLanguage language = Config().languages[entity.languageType];
 

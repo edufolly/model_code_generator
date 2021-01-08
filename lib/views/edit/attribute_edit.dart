@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:folly_fields/crud/abstract_edit.dart';
 import 'package:folly_fields/fields/dropdown_field.dart';
 import 'package:folly_fields/fields/string_field.dart';
+import 'package:folly_fields/util/string_utils.dart';
 import 'package:model_code_generator/consumers/attribute_consumer.dart';
 import 'package:model_code_generator/models/attribute_model.dart';
 import 'package:model_code_generator/models/attribute_type.dart';
@@ -50,7 +51,9 @@ class AttributeEdit
         prefix: prefix,
         label: 'Nome*',
         initialValue: model.name,
-        validator: (String value) => value.isEmpty ? 'Informe o nome' : null,
+        validator: (String value) => StringUtils.isCamelCase(value)
+            ? null
+            : 'Informe um nome válido. (camelCase)',
         onSaved: (String value) => model.name = value,
       ),
 
@@ -61,7 +64,7 @@ class AttributeEdit
         items: Config().attributeConfig.map(
             (AttributeType key, AttributeTypeConfig value) =>
                 MapEntry<AttributeType, String>(key, value.name)),
-        initialValue: model.type,
+        initialValue: model.type ?? AttributeType.String,
         onChanged: (AttributeType value) {
           model.type = value;
           refresh(true);
@@ -94,8 +97,9 @@ class AttributeEdit
         enabled: (typeConfig?.hasName ?? false) ||
             (internalTypeConfig?.hasName ?? false),
         initialValue: model.internalName,
-        validator: (String value) =>
-            value.isEmpty ? 'Informe o nome interno' : null,
+        validator: (String value) => StringUtils.isPascalCase(value)
+            ? null
+            : 'Informe um nome interno válido. (PascalCase)',
         onSaved: (String value) => model.internalName = value,
       ),
 

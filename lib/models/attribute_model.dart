@@ -43,6 +43,13 @@ class AttributeModel extends AbstractModel {
   ///
   ///
   @override
+  AttributeModel fromMulti(Map<String, dynamic> map) =>
+      AttributeModel.fromJson(AbstractModel.fromMultiMap(map));
+
+  ///
+  ///
+  ///
+  @override
   Map<String, dynamic> toMap() {
     Map<String, dynamic> map = super.toMap();
     if (name != null) map['name'] = name;
