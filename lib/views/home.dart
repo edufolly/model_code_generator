@@ -85,33 +85,32 @@ class _HomeState extends State<Home> {
                     children: <Widget>[
                       /// Language
                       DropdownField<LanguageType>(
-                        label: 'Linguagem*',
+                        label: 'Language*',
                         items: LanguageTypeHelper.languageItems,
                         initialValue: entity.languageType ?? LanguageType.Dart,
                         validator: (LanguageType value) =>
-                            value == null ? 'Informe a linguagem' : null,
+                            value == null ? 'Language is required.' : null,
                         onSaved: (LanguageType value) =>
                             entity.languageType = value,
                       ),
 
                       /// Package Path
                       StringField(
-                        label: 'Caminho do Pacote*',
+                        label: 'Package Path*',
                         initialValue: entity.packagePath,
-                        validator: (String value) => value.isEmpty
-                            ? 'Informe o caminho do pacote'
-                            : null,
+                        validator: (String value) =>
+                            value.isEmpty ? 'Package Path is required.' : null,
                         onSaved: (String value) => entity.packagePath = value,
                       ),
 
                       /// Name
                       StringField(
-                        label: 'Nome*',
+                        label: 'Model Class Name*',
                         initialValue: entity.name,
-                        validator: (String value) =>
-                            StringUtils.isPascalCase(value)
-                                ? null
-                                : 'Informe um nome válido. (PascalCase)',
+                        validator: (String value) => StringUtils.isPascalCase(
+                                value)
+                            ? null
+                            : 'Model Class Name is invalid. Use PascalCase.',
                         onSaved: (String value) => entity.name = value,
                       ),
 
@@ -138,7 +137,7 @@ class _HomeState extends State<Home> {
                             AttributeEdit(model, uiBuilder, null, edit),
                         validator: (List<AttributeModel> value) =>
                             value == null || value.isEmpty
-                                ? 'Informe os atributos'
+                                ? 'Attributes are required.'
                                 : null,
                         onSaved: (List<AttributeModel> value) =>
                             entity.attributes = value,
@@ -146,10 +145,10 @@ class _HomeState extends State<Home> {
 
                       /// Search Term
                       StringField(
-                        label: 'Termo de Busca*',
+                        label: 'Search Term*',
                         initialValue: entity.searchterm,
                         validator: (String value) =>
-                            value.isEmpty ? 'Informe o termo de busca' : null,
+                            value.isEmpty ? 'Search Term is required.' : null,
                         onSaved: (String value) => entity.searchterm = value,
                       ),
 
@@ -158,7 +157,7 @@ class _HomeState extends State<Home> {
                         label: 'toString()*',
                         initialValue: entity.tostring,
                         validator: (String value) =>
-                            value.isEmpty ? 'Informe o toString()' : null,
+                            value.isEmpty ? 'toString() is required.' : null,
                         onSaved: (String value) => entity.tostring = value,
                       ),
 
@@ -168,7 +167,7 @@ class _HomeState extends State<Home> {
                         child: RaisedButton.icon(
                           onPressed: _process,
                           icon: Icon(Icons.send),
-                          label: Text('PROCESSAR'),
+                          label: Text('GENERATE'),
                           padding: const EdgeInsets.all(20.0),
                         ),
                       ),
@@ -182,7 +181,7 @@ class _HomeState extends State<Home> {
                   padding: const EdgeInsets.all(8.0),
                   child: TextFormField(
                     decoration: InputDecoration(
-                      labelText: 'Código',
+                      labelText: 'Code',
                       border: OutlineInputBorder(),
                       counterText: '',
                     ),
@@ -237,11 +236,11 @@ class _HomeState extends State<Home> {
     bool process = await _process();
     if (process && _codeController.text.isNotEmpty) {
       await Clipboard.setData(ClipboardData(text: _codeController.text));
-      // TODO - Melhorar a forma da mensagem.
+      // TODO - Better message.
       await FollyDialogs.dialogMessage(
         context: context,
-        title: 'Copiado!',
-        message: 'Código copiado para a área de transferência.',
+        title: 'Copied!',
+        message: 'Code copied to clipboard.',
       );
     }
   }

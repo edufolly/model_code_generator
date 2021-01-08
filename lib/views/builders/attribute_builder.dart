@@ -16,13 +16,13 @@ class AttributeBuilder extends AbstractUIBuilder<AttributeModel> {
   ///
   ///
   @override
-  String getInternalPlural() => 'Atributos';
+  String getInternalPlural() => 'Attributes';
 
   ///
   ///
   ///
   @override
-  String getInternalSingle() => 'Atributo';
+  String getInternalSingle() => 'Attribute';
 
   ///
   ///

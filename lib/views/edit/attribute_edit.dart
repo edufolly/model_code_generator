@@ -49,18 +49,18 @@ class AttributeEdit
       /// Name
       StringField(
         prefix: prefix,
-        label: 'Nome*',
+        label: 'Name*',
         initialValue: model.name,
         validator: (String value) => StringUtils.isCamelCase(value)
             ? null
-            : 'Informe um nome válido. (camelCase)',
+            : 'Name is invalid. Use camelCase.',
         onSaved: (String value) => model.name = value,
       ),
 
       /// Attribute Type
       DropdownField<AttributeType>(
         prefix: prefix,
-        label: 'Tipo*',
+        label: 'Type*',
         items: Config().attributeConfig.map(
             (AttributeType key, AttributeTypeConfig value) =>
                 MapEntry<AttributeType, String>(key, value.name)),
@@ -70,14 +70,14 @@ class AttributeEdit
           refresh(true);
         },
         validator: (AttributeType value) =>
-            value == null ? 'Informe o tipo' : null,
+            value == null ? 'Type is required.' : null,
         onSaved: (AttributeType value) => model.type = value,
       ),
 
-      /// Attribute Type
+      /// Internal Type
       DropdownField<AttributeType>(
         prefix: prefix,
-        label: 'Tipo Interno*',
+        label: 'Internal Type*',
         enabled: typeConfig?.hasInternalType ?? false,
         items: Config().attributeInternalTypeItems,
         initialValue: model.internalType,
@@ -86,20 +86,20 @@ class AttributeEdit
           refresh(true);
         },
         validator: (AttributeType value) =>
-            value == null ? 'Informe o tipo interno' : null,
+            value == null ? 'Internal Type is required.' : null,
         onSaved: (AttributeType value) => model.internalType = value,
       ),
 
       /// Internal Name
       StringField(
         prefix: prefix,
-        label: 'Nome Interno*',
+        label: 'Internal Name*',
         enabled: (typeConfig?.hasName ?? false) ||
             (internalTypeConfig?.hasName ?? false),
         initialValue: model.internalName,
         validator: (String value) => StringUtils.isPascalCase(value)
             ? null
-            : 'Informe um nome interno válido. (PascalCase)',
+            : 'Internal name is invalid. Use PascalCase.',
         onSaved: (String value) => model.internalName = value,
       ),
 

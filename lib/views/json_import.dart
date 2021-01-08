@@ -46,7 +46,7 @@ class _JsonImportState extends State<JsonImport> {
   /// z
   Future<String> _checkClipboard() async {
     if (widget.text == null || widget.text.trim().isEmpty) {
-      // TODO - Verificar o conteúdo da área de transferência e mapear.
+      // TODO - Check clipboard content and map.
       ClipboardData data = await Clipboard.getData('text/plain');
       print(data.text);
     }
@@ -60,7 +60,7 @@ class _JsonImportState extends State<JsonImport> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Importação'),
+        title: Text('Json Import'),
         actions: <Widget>[
           IconButton(
             icon: Icon(FontAwesomeIcons.solidCopy),
@@ -105,11 +105,11 @@ class _JsonImportState extends State<JsonImport> {
   void _copyToClipboard() async {
     if (_jsonController.text.isNotEmpty) {
       await Clipboard.setData(ClipboardData(text: _jsonController.text));
-      // TODO - Melhorar a forma da mensagem.
+      // TODO - better message.
       await FollyDialogs.dialogMessage(
         context: context,
-        title: 'Copiado!',
-        message: 'Json copiado para a área de transferência.',
+        title: 'Copied!',
+        message: 'Json copied to clipboard.',
       );
     }
   }
@@ -122,7 +122,7 @@ class _JsonImportState extends State<JsonImport> {
       String text = _jsonController.text;
       Map<String, dynamic> map = json.decode(text);
       EntityModel entity = EntityModel.fromJson(map);
-      if (entity == null) throw Exception('Entidade não mapeada.');
+      if (entity == null) throw Exception('Entity not mapped.');
       Navigator.of(context).pop(entity);
     } catch (e, s) {
       if (Config().isDebug) {

@@ -162,7 +162,7 @@ class LanguageDart extends AbstractLanguage {
             code += '                .toList()\n';
             code += '            : null';
           } else {
-            // TODO - Comportamento para classes que não sejam model.
+            // TODO - Other classes with internal type different of Model.
             code += '// TODO - Implement: $name - ${attribute.internalType}';
           }
           break;
@@ -245,7 +245,7 @@ class LanguageDart extends AbstractLanguage {
             code += 'model.toMap()).toList();\n';
             code += '    }\n';
           } else {
-            // TODO - Comportamento para classes que não sejam model.
+            // TODO - Other classes with internal type different of Model.
             code += '// TODO - Implement: $name - ${attribute.internalType}';
           }
           break;
