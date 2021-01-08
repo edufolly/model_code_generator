@@ -21,7 +21,8 @@ void main() {
 
 ///
 /// TODO - Implementar o redutor de tamanho de envio.
-///
+/// TODO - Botão de copiar o código e o json.
+/// 
 class ModelCodeGenerator extends StatelessWidget {
   ///
   ///

@@ -2,11 +2,13 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:folly_fields/fields/dropdown_field.dart';
 import 'package:folly_fields/fields/list_field.dart';
 import 'package:folly_fields/fields/string_field.dart';
 import 'package:folly_fields/util/string_utils.dart';
 import 'package:folly_fields/widgets/circular_waiting.dart';
+import 'package:folly_fields/widgets/folly_dialogs.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:model_code_generator/consumers/attribute_consumer.dart';
@@ -35,8 +37,7 @@ class Home extends StatefulWidget {
 ///
 class _HomeState extends State<Home> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final TextEditingController _codeController =
-      TextEditingController(text: ' ');
+  final TextEditingController _codeController = TextEditingController();
 
   EntityModel entity = EntityModel();
 
@@ -49,19 +50,22 @@ class _HomeState extends State<Home> {
       appBar: AppBar(
         title: Text('Model Code Generator'),
         actions: <Widget>[
+          IconButton(
+            icon: Icon(FontAwesomeIcons.solidCopy),
+            onPressed: _copyToClipboard,
+          ),
+          IconButton(
+            icon: Icon(FontAwesomeIcons.solidTrashAlt),
+            onPressed: _clear,
+          ),
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 14.0),
+            padding: const EdgeInsets.all(14.0),
             child: FlatButton(
               child: Text('JSON'),
               onPressed: _jsonImport,
               color: Theme.of(context).colorScheme.onBackground,
               colorBrightness: Brightness.light,
-              // padding: const EdgeInsets.all(0),
             ),
-          ),
-          IconButton(
-            icon: Icon(FontAwesomeIcons.solidTrashAlt),
-            onPressed: _clear,
           ),
         ],
       ),
@@ -184,11 +188,17 @@ class _HomeState extends State<Home> {
                     ),
                     controller: _codeController,
                     keyboardType: TextInputType.multiline,
-                    minLines: 30,
+                    minLines: 1,
                     maxLines: 999,
                     style: GoogleFonts.firaCode(),
                     enableSuggestions: false,
-                    textAlignVertical: TextAlignVertical.top,
+                    autocorrect: false,
+                    toolbarOptions: ToolbarOptions(
+                      copy: true,
+                      cut: false,
+                      paste: false,
+                      selectAll: true,
+                    ),
                   ),
                 ),
               ),
@@ -216,6 +226,23 @@ class _HomeState extends State<Home> {
 
     if (newEntity != null) {
       await _refresh(newEntity);
+      await _process();
+    }
+  }
+
+  ///
+  ///
+  ///
+  void _copyToClipboard() async {
+    bool process = await _process();
+    if (process && _codeController.text.isNotEmpty) {
+      await Clipboard.setData(ClipboardData(text: _codeController.text));
+      // TODO - Melhorar a forma da mensagem.
+      await FollyDialogs.dialogMessage(
+        context: context,
+        title: 'Copiado!',
+        message: 'Código copiado para a área de transferência.',
+      );
     }
   }
 
@@ -244,9 +271,9 @@ class _HomeState extends State<Home> {
   ///
   ///
   ///
-  void _process() async {
+  Future<bool> _process() async {
     if (!_formKey.currentState.validate()) {
-      return;
+      return false;
     }
 
     _formKey.currentState.save();
@@ -254,5 +281,7 @@ class _HomeState extends State<Home> {
     AbstractLanguage language = Config().languages[entity.languageType];
 
     _codeController.text = language.getModelClass(entity);
+
+    return true;
   }
 }

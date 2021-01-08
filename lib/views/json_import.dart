@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:folly_fields/widgets/folly_dialogs.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -42,6 +43,18 @@ class _JsonImportState extends State<JsonImport> {
 
   ///
   ///
+  /// z
+  Future<String> _checkClipboard() async {
+    if (widget.text == null || widget.text.trim().isEmpty) {
+      // TODO - Verificar o conteúdo da área de transferência e mapear.
+      ClipboardData data = await Clipboard.getData('text/plain');
+      print(data.text);
+    }
+    return '';
+  }
+
+  ///
+  ///
   ///
   @override
   Widget build(BuildContext context) {
@@ -50,25 +63,12 @@ class _JsonImportState extends State<JsonImport> {
         title: Text('Importação'),
         actions: <Widget>[
           IconButton(
+            icon: Icon(FontAwesomeIcons.solidCopy),
+            onPressed: _copyToClipboard,
+          ),
+          IconButton(
             icon: Icon(FontAwesomeIcons.check),
-            onPressed: () {
-              try {
-                String text = _jsonController.text;
-                Map<String, dynamic> map = json.decode(text);
-                EntityModel entity = EntityModel.fromJson(map);
-                if (entity == null) throw Exception('Entidade não mapeada.');
-                Navigator.of(context).pop(entity);
-              } catch (e, s) {
-                if (Config().isDebug) {
-                  print(e);
-                  print(s);
-                }
-                FollyDialogs.dialogMessage(
-                  context: context,
-                  message: e.toString(),
-                );
-              }
-            },
+            onPressed: _import,
           )
         ],
       ),
@@ -82,13 +82,57 @@ class _JsonImportState extends State<JsonImport> {
           ),
           controller: _jsonController,
           keyboardType: TextInputType.multiline,
-          minLines: 30,
+          autofocus: true,
+          minLines: 1,
           maxLines: 999,
           style: GoogleFonts.firaCode(),
           enableSuggestions: false,
-          textAlignVertical: TextAlignVertical.top,
+          autocorrect: false,
+          toolbarOptions: ToolbarOptions(
+            copy: true,
+            cut: false,
+            paste: true,
+            selectAll: true,
+          ),
         ),
       ),
     );
+  }
+
+  ///
+  ///
+  ///
+  void _copyToClipboard() async {
+    if (_jsonController.text.isNotEmpty) {
+      await Clipboard.setData(ClipboardData(text: _jsonController.text));
+      // TODO - Melhorar a forma da mensagem.
+      await FollyDialogs.dialogMessage(
+        context: context,
+        title: 'Copiado!',
+        message: 'Json copiado para a área de transferência.',
+      );
+    }
+  }
+
+  ///
+  ///
+  ///
+  void _import() {
+    try {
+      String text = _jsonController.text;
+      Map<String, dynamic> map = json.decode(text);
+      EntityModel entity = EntityModel.fromJson(map);
+      if (entity == null) throw Exception('Entidade não mapeada.');
+      Navigator.of(context).pop(entity);
+    } catch (e, s) {
+      if (Config().isDebug) {
+        print(e);
+        print(s);
+      }
+      FollyDialogs.dialogMessage(
+        context: context,
+        message: e.toString(),
+      );
+    }
   }
 }
