@@ -20,9 +20,8 @@ void main() {
 }
 
 ///
-/// TODO - Implementar o redutor de tamanho de envio.
-/// TODO - Botão de copiar o código e o json.
-/// 
+/// TODO - Implementar o redutor de tamanho de envio no toSave().
+///
 class ModelCodeGenerator extends StatelessWidget {
   ///
   ///
@@ -42,7 +41,7 @@ class ModelCodeGenerator extends StatelessWidget {
         GlobalWidgetsLocalizations.delegate,
       ],
       supportedLocales: <Locale>[
-        const Locale('pt', 'BR'),
+        const Locale('en', 'US'),
       ],
     );
   }

@@ -141,6 +141,9 @@ class _HomeState extends State<Home> {
                                 : null,
                         onSaved: (List<AttributeModel> value) =>
                             entity.attributes = value,
+                        addText: 'Add %s',
+                        removeText: 'Remove %s?',
+                        emptyListText: 'No %s.',
                       ),
 
                       /// Search Term
