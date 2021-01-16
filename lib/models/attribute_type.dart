@@ -6,6 +6,7 @@ enum AttributeType {
   Boolean,
   Integer,
   Double,
+  Date,
   Object,
   Model,
   List,
@@ -26,6 +27,8 @@ class AttributeTypeHelper {
         return AttributeType.Integer;
       case 'Double':
         return AttributeType.Double;
+      case 'Date':
+        return AttributeType.Date;
       case 'Object':
         return AttributeType.Object;
       case 'Model':

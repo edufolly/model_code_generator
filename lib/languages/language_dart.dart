@@ -18,6 +18,7 @@ class LanguageDart extends AbstractLanguage {
     AttributeType.Boolean: 'bool',
     AttributeType.Integer: 'int',
     AttributeType.Double: 'double',
+    AttributeType.Date: 'DateTime',
     AttributeType.Object: 'dynamic',
     AttributeType.Model: null,
     AttributeType.List: 'List',
@@ -144,6 +145,13 @@ class LanguageDart extends AbstractLanguage {
           code += '        $name = map[\'$name\']';
           if (attribute.hasNullAware) code += ' ?? ${attribute.nullAware}';
           break;
+        case AttributeType.Date:
+          // TODO - Null-aware??
+          code += '        $name = map[\'$name\'] != null\n';
+          code += '            ? ';
+          code += 'DateTime.fromMillisecondsSinceEpoch(map[\'$name\'])\n';
+          code += '            : null';
+          break;
         case AttributeType.Model:
           code += '        $name = map[\'$name\'] != null\n';
           code += '            ? ';
@@ -218,18 +226,18 @@ class LanguageDart extends AbstractLanguage {
         case AttributeType.Integer:
         case AttributeType.Double:
         case AttributeType.Object:
-          if (!attribute.hasNullAware) {
-            code += 'if ($name != null) ';
-          }
+          if (!attribute.hasNullAware) code += 'if ($name != null) ';
           code += 'map[\'$name\'] = $name';
           if (attribute.hasNullAware) code += ' ?? ${attribute.nullAware}';
           code += ';\n';
           break;
+        case AttributeType.Date:
+          // TODO - Null-aware??
+          code += 'if ($name != null) ';
+          code += 'map[\'$name\'] = $name.millisecondsSinceEpoch;\n';
+          break;
         case AttributeType.Model:
-          if (!attribute.hasNullAware) {
-            code += 'if ($name != null) ';
-          }
-
+          if (!attribute.hasNullAware) code += 'if ($name != null) ';
           code += 'map[\'$name\'] = ';
           code += attribute.hasNullAware
               ? '($name ?? ${attribute.nullAware})'
