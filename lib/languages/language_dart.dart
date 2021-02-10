@@ -147,7 +147,7 @@ class LanguageDart extends AbstractLanguage {
           break;
         case AttributeType.Date:
           // TODO - Null-aware??
-          code += '        $name = map[\'$name\'] != null\n';
+          code += '        $name = map[\'$name\'] != null && map[\'$name\'] >= 0\n';
           code += '            ? ';
           code += 'DateTime.fromMillisecondsSinceEpoch(map[\'$name\'])\n';
           code += '            : null';

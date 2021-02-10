@@ -3,7 +3,7 @@ description: A model code generator project.
 
 publish_to: 'none'
 
-version: 0.0.6+6
+version: 0.0.7+7
 
 environment:
   sdk: ">=2.9.0 <3.0.0"
@@ -21,7 +21,7 @@ dependencies:
   # https://pub.dev/packages/shared_preferences
   shared_preferences: 0.5.12+4
   # https://pub.dev/packages/google_fonts
-  google_fonts: 1.1.1
+  google_fonts: 1.1.2
   # https://github.com/edufolly/folly_fields
   folly_fields:
     git:
