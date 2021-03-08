@@ -77,6 +77,11 @@ class Config extends AbstractConfig {
       hasInternalType: false,
       hasName: false,
     ),
+    AttributeType.Float: AttributeTypeConfig(
+      name: 'Float',
+      hasInternalType: false,
+      hasName: false,
+    ),
     AttributeType.Date: AttributeTypeConfig(
       name: 'Date',
       hasInternalType: false,
@@ -101,7 +106,12 @@ class Config extends AbstractConfig {
       name: 'IconData',
       hasInternalType: false,
       hasName: false,
-    )
+    ),
+    AttributeType.Empty: AttributeTypeConfig(
+      name: '[Empty]',
+      hasInternalType: false,
+      hasName: false,
+    ),
   };
 
   ///

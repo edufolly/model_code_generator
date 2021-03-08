@@ -36,7 +36,7 @@ abstract class BaseConsumerMock<T extends AbstractModel>
     Map<String, String> qsParam,
     bool forceOffline,
   ) async =>
-      null;
+      <T>[];
 
   ///
   ///
@@ -46,7 +46,7 @@ abstract class BaseConsumerMock<T extends AbstractModel>
     BuildContext context,
     Map<String, String> qsParam,
   ) async =>
-      null;
+      <T, String>{};
 
   ///
   ///

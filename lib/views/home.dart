@@ -60,11 +60,15 @@ class _HomeState extends State<Home> {
           ),
           Padding(
             padding: const EdgeInsets.all(14.0),
-            child: FlatButton(
+            child: ElevatedButton(
               child: Text('JSON'),
               onPressed: _jsonImport,
-              color: Theme.of(context).colorScheme.onBackground,
-              colorBrightness: Brightness.light,
+              style: ElevatedButton.styleFrom(
+                primary: Theme.of(context).colorScheme.onSurface,
+                onPrimary: Theme.of(context).colorScheme.surface,
+                elevation: 0.0,
+                textStyle: TextStyle(fontWeight: FontWeight.bold),
+              ),
             ),
           ),
         ],
@@ -87,11 +91,11 @@ class _HomeState extends State<Home> {
                       DropdownField<LanguageType>(
                         label: 'Language*',
                         items: LanguageTypeHelper.languageItems,
-                        initialValue: entity.languageType ?? LanguageType.Dart,
-                        validator: (LanguageType value) =>
+                        initialValue: entity.languageType,
+                        validator: (LanguageType? value) =>
                             value == null ? 'Language is required.' : null,
-                        onSaved: (LanguageType value) =>
-                            entity.languageType = value,
+                        onSaved: (LanguageType? value) =>
+                            entity.languageType = value!,
                       ),
 
                       /// Package Path
@@ -116,8 +120,8 @@ class _HomeState extends State<Home> {
 
                       /// Attributes
                       ListField<AttributeModel, AttributeBuilder>(
-                        initialValue: entity.attributes ?? <AttributeModel>[],
-                        uiBuilder: AttributeBuilder(null),
+                        initialValue: entity.attributes,
+                        uiBuilder: AttributeBuilder(''),
                         routeAddBuilder: (
                           BuildContext context,
                           AttributeBuilder uiBuilder,
@@ -134,11 +138,14 @@ class _HomeState extends State<Home> {
                           AttributeBuilder uiBuilder,
                           bool edit,
                         ) =>
-                            AttributeEdit(model, uiBuilder, null, edit),
+                            AttributeEdit(
+                          model,
+                          uiBuilder,
+                          AttributeConsumer(),
+                          edit,
+                        ),
                         validator: (List<AttributeModel> value) =>
-                            value == null || value.isEmpty
-                                ? 'Attributes are required.'
-                                : null,
+                            value.isEmpty ? 'Attributes are required.' : null,
                         onSaved: (List<AttributeModel> value) =>
                             entity.attributes = value,
                         addText: 'Add %s',
@@ -149,29 +156,32 @@ class _HomeState extends State<Home> {
                       /// Search Term
                       StringField(
                         label: 'Search Term*',
-                        initialValue: entity.searchterm,
+                        initialValue: entity.modelSearchTerm,
                         validator: (String value) =>
                             value.isEmpty ? 'Search Term is required.' : null,
-                        onSaved: (String value) => entity.searchterm = value,
+                        onSaved: (String value) =>
+                            entity.modelSearchTerm = value,
                       ),
 
                       /// toString()
                       StringField(
                         label: 'toString()*',
-                        initialValue: entity.tostring,
+                        initialValue: entity.modelToString,
                         validator: (String value) =>
                             value.isEmpty ? 'toString() is required.' : null,
-                        onSaved: (String value) => entity.tostring = value,
+                        onSaved: (String value) => entity.modelToString = value,
                       ),
 
                       /// Process
                       Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: RaisedButton.icon(
+                        child: ElevatedButton.icon(
                           onPressed: _process,
                           icon: Icon(Icons.send),
                           label: Text('GENERATE'),
-                          padding: const EdgeInsets.all(20.0),
+                          style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.all(20.0),
+                          ),
                         ),
                       ),
                     ],
@@ -216,14 +226,14 @@ class _HomeState extends State<Home> {
   ///
   void _jsonImport() async {
     String text = ' ';
-    if (_formKey.currentState.validate()) {
-      _formKey.currentState.save();
+    if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
       Map<String, dynamic> map = entity.toMap();
       JsonEncoder encoder = JsonEncoder.withIndent('  ');
       text = encoder.convert(map);
     }
 
-    EntityModel newEntity = await Navigator.of(context).push(
+    EntityModel? newEntity = await Navigator.of(context).push(
         MaterialPageRoute<EntityModel>(builder: (_) => JsonImport(text: text)));
 
     if (newEntity != null) {
@@ -258,7 +268,7 @@ class _HomeState extends State<Home> {
   ///
   ///
   ///
-  void _refresh(EntityModel newEntity) async {
+  Future<void> _refresh(EntityModel newEntity) async {
     CircularWaiting wait = CircularWaiting(context);
     wait.show();
     _codeController.clear();
@@ -266,7 +276,7 @@ class _HomeState extends State<Home> {
       entity = newEntity;
     });
     await Future<void>.delayed(Duration(milliseconds: 1000));
-    _formKey.currentState.reset();
+    _formKey.currentState!.reset();
     wait.close();
   }
 
@@ -274,13 +284,13 @@ class _HomeState extends State<Home> {
   ///
   ///
   Future<bool> _process() async {
-    if (!_formKey.currentState.validate()) {
+    if (!_formKey.currentState!.validate()) {
       return false;
     }
 
-    _formKey.currentState.save();
+    _formKey.currentState!.save();
 
-    AbstractLanguage language = Config().languages[entity.languageType];
+    AbstractLanguage language = Config().languages[entity.languageType]!;
 
     _codeController.text = language.getModelClass(entity);
 

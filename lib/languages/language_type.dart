@@ -4,6 +4,7 @@
 enum LanguageType {
   Dart,
   Java,
+  Unknown,
 }
 
 ///
@@ -20,7 +21,7 @@ class LanguageTypeHelper {
       case 'Java':
         return LanguageType.Java;
       default:
-        return null;
+        return LanguageType.Unknown;
     }
   }
 

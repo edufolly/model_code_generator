@@ -6,11 +6,14 @@ enum AttributeType {
   Boolean,
   Integer,
   Double,
+  Float,
   Date,
   Object,
   Model,
   List,
   IconData,
+  Empty,
+  Unknown
 }
 
 ///
@@ -27,6 +30,8 @@ class AttributeTypeHelper {
         return AttributeType.Integer;
       case 'Double':
         return AttributeType.Double;
+      case 'Float':
+        return AttributeType.Float;
       case 'Date':
         return AttributeType.Date;
       case 'Object':
@@ -37,8 +42,10 @@ class AttributeTypeHelper {
         return AttributeType.List;
       case 'IconData':
         return AttributeType.IconData;
+      case 'Empty':
+        return AttributeType.Empty;
       default:
-        return null;
+        return AttributeType.Unknown;
     }
   }
 

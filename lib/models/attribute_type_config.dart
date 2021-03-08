@@ -1,4 +1,3 @@
-import 'package:flutter/widgets.dart';
 import 'package:folly_fields/crud/abstract_model.dart';
 
 ///
@@ -13,16 +12,16 @@ class AttributeTypeConfig extends AbstractModel {
   ///
   ///
   AttributeTypeConfig({
-    @required this.name,
-    @required this.hasInternalType,
-    @required this.hasName,
+    required this.name,
+    required this.hasInternalType,
+    required this.hasName,
   });
 
   ///
   ///
   ///
   AttributeTypeConfig.fromJson(Map<String, dynamic> map)
-      : name = map['name'],
+      : name = map['name'] ?? '',
         hasInternalType = map['hasInternalType'] ?? false,
         hasName = map['needName'] ?? false,
         super.fromJson(map);
@@ -47,9 +46,9 @@ class AttributeTypeConfig extends AbstractModel {
   @override
   Map<String, dynamic> toMap() {
     Map<String, dynamic> map = super.toMap();
-    if (name != null) map['name'] = name;
-    map['hasInternalType'] = hasInternalType ?? false;
-    map['needName'] = hasName ?? false;
+    map['name'] = name;
+    map['hasInternalType'] = hasInternalType;
+    map['needName'] = hasName;
     return map;
   }
 

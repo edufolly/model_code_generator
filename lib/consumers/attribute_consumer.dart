@@ -15,5 +15,5 @@ class AttributeConsumer extends BaseConsumerMock<AttributeModel> {
   ///
   ///
   @override
-  List<String> get routeName => null;
+  List<String> get routeName => <String>[];
 }

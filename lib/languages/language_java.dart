@@ -12,8 +12,14 @@ class LanguageJava extends AbstractLanguage {
     AttributeType.Boolean: 'boolean',
     AttributeType.Integer: 'int',
     AttributeType.Double: 'double',
-    AttributeType.Model: null,
+    AttributeType.Float: 'float',
+    AttributeType.Date: 'DateTime',
+    AttributeType.Object: 'dynamic',
+    AttributeType.Model: '',
     AttributeType.List: 'List',
+    AttributeType.IconData: 'IconData',
+    AttributeType.Unknown: '[Unknown]',
+    AttributeType.Empty: '',
   };
 
   ///
@@ -26,7 +32,7 @@ class LanguageJava extends AbstractLanguage {
   ///
   ///
   @override
-  String typeName(AttributeType attributeType) => typeNames[attributeType];
+  String typeName(AttributeType attributeType) => typeNames[attributeType]!;
 
   ///
   ///

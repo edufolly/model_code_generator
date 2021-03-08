@@ -23,7 +23,7 @@ class AttributeEdit
     AttributeBuilder uiBuilder,
     AttributeConsumer consumer,
     bool edit, {
-    Key key,
+    Key? key,
   }) : super(model, uiBuilder, consumer, edit, key: key);
 
   ///
@@ -38,12 +38,10 @@ class AttributeEdit
     String prefix,
     Function(bool refresh) refresh,
   ) {
-    AttributeTypeConfig typeConfig =
-        model.type == null ? null : Config().attributeConfig[model.type];
+    AttributeTypeConfig typeConfig = Config().attributeConfig[model.type]!;
 
-    AttributeTypeConfig internalTypeConfig = model.internalType == null
-        ? null
-        : Config().attributeInternalConfig[model.internalType];
+    AttributeTypeConfig internalTypeConfig =
+        Config().attributeInternalConfig[model.internalType]!;
 
     return <Widget>[
       /// Name
@@ -64,38 +62,37 @@ class AttributeEdit
         items: Config().attributeConfig.map(
             (AttributeType key, AttributeTypeConfig value) =>
                 MapEntry<AttributeType, String>(key, value.name)),
-        initialValue: model.type ?? AttributeType.String,
-        onChanged: (AttributeType value) {
-          model.type = value;
+        initialValue: model.type,
+        onChanged: (AttributeType? value) {
+          model.type = value!;
           refresh(true);
         },
-        validator: (AttributeType value) =>
+        validator: (AttributeType? value) =>
             value == null ? 'Type is required.' : null,
-        onSaved: (AttributeType value) => model.type = value,
+        onSaved: (AttributeType? value) => model.type = value!,
       ),
 
       /// Internal Type
       DropdownField<AttributeType>(
         prefix: prefix,
         label: 'Internal Type*',
-        enabled: typeConfig?.hasInternalType ?? false,
+        enabled: typeConfig.hasInternalType,
         items: Config().attributeInternalTypeItems,
         initialValue: model.internalType,
-        onChanged: (AttributeType value) {
-          model.internalType = value;
+        onChanged: (AttributeType? value) {
+          model.internalType = value!;
           refresh(true);
         },
-        validator: (AttributeType value) =>
+        validator: (AttributeType? value) =>
             value == null ? 'Internal Type is required.' : null,
-        onSaved: (AttributeType value) => model.internalType = value,
+        onSaved: (AttributeType? value) => model.internalType = value!,
       ),
 
       /// Internal Name
       StringField(
         prefix: prefix,
         label: 'Internal Name*',
-        enabled: (typeConfig?.hasName ?? false) ||
-            (internalTypeConfig?.hasName ?? false),
+        enabled: typeConfig.hasName ||internalTypeConfig.hasName,
         initialValue: model.internalName,
         validator: (String value) => StringUtils.isPascalCase(value)
             ? null

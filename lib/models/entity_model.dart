@@ -6,12 +6,12 @@ import 'package:model_code_generator/languages/language_type.dart';
 ///
 ///
 class EntityModel extends AbstractModel {
-  String name;
-  LanguageType languageType;
-  String packagePath;
-  List<AttributeModel> attributes;
-  String searchterm;
-  String tostring;
+  String name = '';
+  LanguageType languageType = LanguageType.Unknown;
+  String packagePath = '';
+  List<AttributeModel> attributes = <AttributeModel>[];
+  String modelSearchTerm = '';
+  String modelToString = '';
 
   ///
   ///
@@ -22,16 +22,16 @@ class EntityModel extends AbstractModel {
   ///
   ///
   EntityModel.fromJson(Map<String, dynamic> map)
-      : name = map['name'],
+      : name = map['name'] ?? '',
         languageType = LanguageTypeHelper.parse(map['languageType']),
-        packagePath = map['packagePath'],
-        attributes = map['attributes'] == null
-            ? null
-            : (map['attributes'] as List<dynamic>)
+        packagePath = map['packagePath'] ?? '',
+        attributes = map['attributes'] != null
+            ? (map['attributes'] as List<dynamic>)
                 .map((dynamic attribute) => AttributeModel.fromJson(attribute))
-                .toList(),
-        searchterm = map['searchTerm'],
-        tostring = map['toString'],
+                .toList()
+            : <AttributeModel>[],
+        modelSearchTerm = map['searchTerm'] ?? '',
+        modelToString = map['toString'] ?? '',
         super.fromJson(map);
 
   ///
@@ -53,24 +53,14 @@ class EntityModel extends AbstractModel {
   @override
   Map<String, dynamic> toMap() {
     Map<String, dynamic> map = super.toMap();
-    if (name != null) map['name'] = name;
-
-    if (languageType != null) {
-      map['languageType'] = LanguageTypeHelper.string(languageType);
-    }
-
-    if (packagePath != null) map['packagePath'] = packagePath;
-
-    if (attributes != null) {
-      map['attributes'] = attributes
-          .map((AttributeModel attribute) => attribute.toMap())
-          .toList();
-    }
-
-    if (searchterm != null) map['searchTerm'] = searchterm;
-
-    if (tostring != null) map['toString'] = tostring;
-
+    map['name'] = name;
+    map['languageType'] = LanguageTypeHelper.string(languageType);
+    map['packagePath'] = packagePath;
+    map['attributes'] = attributes
+        .map((AttributeModel attribute) => attribute.toMap())
+        .toList();
+    map['searchTerm'] = modelSearchTerm;
+    map['toString'] = modelToString;
     return map;
   }
 

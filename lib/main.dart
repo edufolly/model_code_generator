@@ -33,6 +33,7 @@ class ModelCodeGenerator extends StatelessWidget {
       title: 'Model Code Generator',
       theme: ThemeData(
         brightness: Brightness.dark,
+        accentColor: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       home: Home(),

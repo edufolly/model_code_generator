@@ -17,7 +17,7 @@ class JsonImport extends StatefulWidget {
   ///
   ///
   ///
-  const JsonImport({Key key, this.text}) : super(key: key);
+  const JsonImport({Key? key, this.text = ''}) : super(key: key);
 
   ///
   ///
@@ -30,7 +30,7 @@ class JsonImport extends StatefulWidget {
 ///
 ///
 class _JsonImportState extends State<JsonImport> {
-  TextEditingController _jsonController;
+  TextEditingController _jsonController = TextEditingController();
 
   ///
   ///
@@ -45,10 +45,10 @@ class _JsonImportState extends State<JsonImport> {
   ///
   /// z
   Future<String> _checkClipboard() async {
-    if (widget.text == null || widget.text.trim().isEmpty) {
+    if (widget.text.trim().isEmpty) {
       // TODO - Check clipboard content and map.
-      ClipboardData data = await Clipboard.getData('text/plain');
-      print(data.text);
+      ClipboardData? data = await Clipboard.getData('text/plain');
+      print(data?.text);
     }
     return '';
   }
@@ -122,7 +122,6 @@ class _JsonImportState extends State<JsonImport> {
       String text = _jsonController.text;
       Map<String, dynamic> map = json.decode(text);
       EntityModel entity = EntityModel.fromJson(map);
-      if (entity == null) throw Exception('Entity not mapped.');
       Navigator.of(context).pop(entity);
     } catch (e, s) {
       if (Config().isDebug) {

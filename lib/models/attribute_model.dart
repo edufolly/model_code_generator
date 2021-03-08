@@ -7,11 +7,11 @@ import 'package:model_code_generator/util/config.dart';
 ///
 ///
 class AttributeModel extends AbstractModel {
-  String name;
-  AttributeType type;
-  String internalName;
-  AttributeType internalType;
-  String nullAware;
+  String name = '';
+  AttributeType type = AttributeType.Unknown;
+  String internalName = '';
+  AttributeType internalType = AttributeType.Empty;
+  String nullAware = '';
 
   ///
   ///
@@ -22,14 +22,15 @@ class AttributeModel extends AbstractModel {
   ///
   ///
   AttributeModel.fromJson(Map<String, dynamic> map)
-      : name = map['name'],
-        type =
-            map['type'] == null ? null : AttributeTypeHelper.parse(map['type']),
-        internalName = map['internalName'],
-        internalType = map['internalType'] == null
-            ? null
-            : AttributeTypeHelper.parse(map['internalType']),
-        nullAware = map['nullAware'],
+      : name = map['name'] ?? '',
+        type = map['type'] != null
+            ? AttributeTypeHelper.parse(map['type'])
+            : AttributeType.Empty,
+        internalName = map['internalName'] ?? '',
+        internalType = map['internalType'] != null
+            ? AttributeTypeHelper.parse(map['internalType'])
+            : AttributeType.Empty,
+        nullAware = map['nullAware'] ?? '',
         super.fromJson(map);
 
   ///
@@ -52,24 +53,11 @@ class AttributeModel extends AbstractModel {
   @override
   Map<String, dynamic> toMap() {
     Map<String, dynamic> map = super.toMap();
-    if (name != null) map['name'] = name;
-
-    if (type != null) {
-      map['type'] = AttributeTypeHelper.string(type);
-    }
-
-    if (internalName != null && internalName.isNotEmpty) {
-      map['internalName'] = internalName;
-    }
-
-    if (internalType != null) {
-      map['internalType'] = AttributeTypeHelper.string(internalType);
-    }
-
-    if (nullAware != null && nullAware.isNotEmpty) {
-      map['nullAware'] = nullAware;
-    }
-
+    map['name'] = name;
+    map['type'] = AttributeTypeHelper.string(type);
+    map['internalName'] = internalName;
+    map['internalType'] = AttributeTypeHelper.string(internalType);
+    map['nullAware'] = nullAware;
     return map;
   }
 
@@ -89,11 +77,10 @@ class AttributeModel extends AbstractModel {
   ///
   ///
   String get textType {
-    AttributeTypeConfig typeConfig = Config().attributeConfig[type];
+    AttributeTypeConfig typeConfig = Config().attributeConfig[type]!;
 
-    AttributeTypeConfig internalTypeConfig = internalType == null
-        ? null
-        : Config().attributeInternalConfig[internalType];
+    AttributeTypeConfig internalTypeConfig =
+        Config().attributeInternalConfig[internalType]!;
 
     if (typeConfig.hasInternalType) {
       String s = typeConfig.name;
@@ -115,5 +102,5 @@ class AttributeModel extends AbstractModel {
   ///
   ///
   ///
-  bool get hasNullAware => nullAware != null && nullAware.isNotEmpty;
+  bool get hasNullAware => nullAware.isNotEmpty;
 }
