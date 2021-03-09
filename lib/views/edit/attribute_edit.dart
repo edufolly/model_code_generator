@@ -38,10 +38,11 @@ class AttributeEdit
     String prefix,
     Function(bool refresh) refresh,
   ) {
-    AttributeTypeConfig typeConfig = Config().attributeConfig[model.type]!;
+    AttributeTypeConfig typeConfig =
+        Config().attributeConfig[model.type.value]!;
 
     AttributeTypeConfig internalTypeConfig =
-        Config().attributeInternalConfig[model.internalType]!;
+        Config().attributeInternalConfig[model.internalType.value]!;
 
     return <Widget>[
       /// Name
