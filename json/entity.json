@@ -1,0 +1,59 @@
+{
+  "name": "Entity",
+  "languageType": "Dart",
+  "packagePath": "model_code_generator/models",
+  "attributes": [
+    {
+      "name": "name",
+      "type": "String",
+      "internalName": "",
+      "internalType": "Empty",
+      "nullAware": "''"
+    },
+    {
+      "name": "languageType",
+      "type": "Model",
+      "internalName": "LanguageType",
+      "internalType": "Empty",
+      "nullAware": "LanguageType.Dart"
+    },
+    {
+      "name": "packagePath",
+      "type": "String",
+      "internalName": "",
+      "internalType": "Empty",
+      "nullAware": "''"
+    },
+    {
+      "name": "attributes",
+      "type": "List",
+      "internalName": "AttributeModel",
+      "internalType": "Model",
+      "nullAware": "[]"
+    },
+    {
+      "name": "modelSearchTerm",
+      "type": "String",
+      "internalName": "",
+      "internalType": "Empty",
+      "nullAware": "''"
+    },
+    {
+      "name": "modelToString",
+      "type": "String",
+      "internalName": "",
+      "internalType": "Empty",
+      "nullAware": "''"
+    },
+    {
+      "name": "moreCode",
+      "type": "String",
+      "internalName": "",
+      "internalType": "Empty",
+      "nullAware": "''"
+    }
+  ],
+  "searchTerm": "name",
+  "toString": "name",
+  "moreCode": ""
+}

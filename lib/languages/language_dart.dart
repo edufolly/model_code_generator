@@ -3,10 +3,10 @@ import 'dart:collection';
 import 'package:folly_fields/util/string_utils.dart';
 import 'package:model_code_generator/languages/abstract_language.dart';
 import 'package:model_code_generator/models/attribute_model.dart';
-import 'package:model_code_generator/models/attribute_type.dart';
+import 'package:model_code_generator/models/attribute_type_model.dart';
 import 'package:model_code_generator/models/attribute_type_config.dart';
 import 'package:model_code_generator/models/entity_model.dart';
-import 'package:model_code_generator/languages/language_type.dart';
+import 'package:model_code_generator/models/language_type_model.dart';
 import 'package:model_code_generator/util/config.dart';
 
 ///
@@ -44,17 +44,18 @@ class LanguageDart extends AbstractLanguage {
   ///
   ///
   String langType(AttributeModel attribute) {
-    AttributeTypeConfig typeConfig = Config().attributeConfig[attribute.type]!;
+    AttributeTypeConfig typeConfig =
+        Config().attributeConfig[attribute.type.value]!;
 
     AttributeTypeConfig internalTypeConfig =
-        Config().attributeInternalConfig[attribute.internalType]!;
+        Config().attributeInternalConfig[attribute.internalType.value]!;
 
     if (typeConfig.hasInternalType) {
-      String s = typeName(attribute.type);
+      String s = typeName(attribute.type.value);
       if (internalTypeConfig.hasName) {
         s += '<${attribute.internalName}Model>';
       } else {
-        s += '<${typeName(attribute.internalType)}>';
+        s += '<${typeName(attribute.internalType.value)}>';
       }
       return s;
     }
@@ -63,7 +64,7 @@ class LanguageDart extends AbstractLanguage {
       return '${attribute.internalName}Model';
     }
 
-    return typeName(attribute.type);
+    return typeName(attribute.type.value);
   }
 
   SplayTreeSet<String> imports = SplayTreeSet<String>();
@@ -85,7 +86,7 @@ class LanguageDart extends AbstractLanguage {
     ///
     ///
     for (AttributeModel attribute in entity.attributes) {
-      if (attribute.type == AttributeType.IconData) {
+      if (attribute.type.value == AttributeType.IconData) {
         imports.add('import \'package:flutter/material.dart\';\n');
         imports.add('import \'package:folly_fields/util/icon_helper.dart\';\n');
         break;
@@ -97,8 +98,8 @@ class LanguageDart extends AbstractLanguage {
     if (!packagePath.endsWith('/')) packagePath += '/';
 
     for (AttributeModel attribute in entity.attributes) {
-      if (attribute.type == AttributeType.Model ||
-          attribute.internalType == AttributeType.Model) {
+      if (attribute.type.value == AttributeType.Model ||
+          attribute.internalType.value == AttributeType.Model) {
         String filename = StringUtils.pascal2Snake(attribute.internalName);
         imports.add('import \'package:$packagePath$filename\_model.dart\';\n');
       }
@@ -112,11 +113,15 @@ class LanguageDart extends AbstractLanguage {
     code += '///\n';
     code += 'class $className extends AbstractModel {\n';
     for (AttributeModel attribute in entity.attributes) {
-      code += '  ${langType(attribute)} ${attribute.name}';
+      code += '  ${langType(attribute)}';
+
+      if (!attribute.hasNullAware) code += '?';
+
+      code += ' ${attribute.name}';
 
       if (attribute.hasNullAware) {
         code += ' = ';
-        switch (attribute.type) {
+        switch (attribute.type.value) {
           case AttributeType.String:
           case AttributeType.Boolean:
           case AttributeType.Integer:
@@ -138,8 +143,6 @@ class LanguageDart extends AbstractLanguage {
             // TODO: Exception.
             break;
         }
-      } else {
-        code += '?';
       }
 
       code += ';\n';
@@ -166,7 +169,7 @@ class LanguageDart extends AbstractLanguage {
 
     for (AttributeModel attribute in entity.attributes) {
       String name = attribute.name;
-      switch (attribute.type) {
+      switch (attribute.type.value) {
         case AttributeType.String:
         case AttributeType.Boolean:
         case AttributeType.Integer:
@@ -192,7 +195,7 @@ class LanguageDart extends AbstractLanguage {
           code += attribute.hasNullAware ? attribute.nullAware : 'null';
           break;
         case AttributeType.List:
-          if (attribute.internalType == AttributeType.Model) {
+          if (attribute.internalType.value == AttributeType.Model) {
             code += '        $name = map[\'$name\'] != null\n';
             code += '            ? (map[\'$name\'] as List<dynamic>)\n';
             code += '                ';
@@ -263,7 +266,7 @@ class LanguageDart extends AbstractLanguage {
 
       code += '    ';
 
-      switch (attribute.type) {
+      switch (attribute.type.value) {
         case AttributeType.String:
         case AttributeType.Boolean:
         case AttributeType.Integer:
@@ -276,10 +279,12 @@ class LanguageDart extends AbstractLanguage {
           code += 'map[\'$name\'] = $name.millisecondsSinceEpoch;\n';
           break;
         case AttributeType.Model:
-          code += 'map[\'$name\'] = $name.toMap();\n';
+          code += 'map[\'$name\'] = $name';
+          if (!attribute.hasNullAware) code += '?';
+          code += '.toMap();\n';
           break;
         case AttributeType.List:
-          if (attribute.internalType == AttributeType.Model) {
+          if (attribute.internalType.value == AttributeType.Model) {
             code += 'map[\'$name\'] = ';
             code += '$name.map((${attribute.internalName}Model model) => ';
             code += 'model.toMap()).toList();\n';
@@ -324,6 +329,17 @@ class LanguageDart extends AbstractLanguage {
     code += '  ///\n';
     code += '  @override\n';
     code += '  String toString() => ${entity.modelToString};\n';
+
+    ///
+    ///
+    ///
+    if (entity.moreCode.isNotEmpty) {
+      code += '\n';
+      code += '  ///\n';
+      code += '  ///\n';
+      code += '  ///\n';
+      code += '  ${entity.moreCode}\n';
+    }
 
     ///
     ///

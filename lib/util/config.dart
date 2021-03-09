@@ -2,8 +2,9 @@ import 'package:folly_fields/folly_fields.dart';
 import 'package:model_code_generator/languages/abstract_language.dart';
 import 'package:model_code_generator/languages/language_dart.dart';
 import 'package:model_code_generator/languages/language_java.dart';
-import 'package:model_code_generator/languages/language_type.dart';
-import 'package:model_code_generator/models/attribute_type.dart';
+import 'package:model_code_generator/models/attribute_model.dart';
+import 'package:model_code_generator/models/language_type_model.dart';
+import 'package:model_code_generator/models/attribute_type_model.dart';
 import 'package:model_code_generator/models/attribute_type_config.dart';
 
 ///
@@ -112,6 +113,11 @@ class Config extends AbstractConfig {
       hasInternalType: false,
       hasName: false,
     ),
+    AttributeType.Unknown: AttributeTypeConfig(
+      name: '[Unknown]',
+      hasInternalType: false,
+      hasName: false,
+    ),
   };
 
   ///
@@ -122,4 +128,30 @@ class Config extends AbstractConfig {
     LanguageType.Dart: LanguageDart(),
     LanguageType.Java: LanguageJava(),
   };
+
+  ///
+  ///
+  ///
+  String textType(AttributeModel attribute) {
+    AttributeTypeConfig typeConfig = attributeConfig[attribute.type.value]!;
+
+    AttributeTypeConfig internalTypeConfig =
+        attributeInternalConfig[attribute.internalType.value]!;
+
+    if (typeConfig.hasInternalType) {
+      String s = typeConfig.name;
+      if (internalTypeConfig.hasName) {
+        s += '<${attribute.internalName}>';
+      } else {
+        s += '<${internalTypeConfig.name}>';
+      }
+      return s;
+    }
+
+    if (typeConfig.hasName) {
+      return attribute.internalName;
+    }
+
+    return typeConfig.name;
+  }
 }

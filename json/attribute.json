@@ -1,0 +1,45 @@
+{
+  "name": "Attribute",
+  "languageType": "Dart",
+  "packagePath": "model_code_generator/models",
+  "attributes": [
+    {
+      "name": "name",
+      "type": "String",
+      "internalType": "Empty",
+      "internalName": "",
+      "nullAware": "''"
+    },
+    {
+      "name": "type",
+      "type": "Model",
+      "internalType": "Empty",
+      "internalName": "AttributeType",
+      "nullAware": "AttributeTypeModel(value: AttributeType.String)"
+    },
+    {
+      "name": "internalType",
+      "type": "Model",
+      "internalType": "Empty",
+      "internalName": "AttributeType",
+      "nullAware": "AttributeTypeModel(value: AttributeType.Empty)"
+    },
+    {
+      "name": "internalName",
+      "type": "String",
+      "internalType": "Empty",
+      "internalName": "",
+      "nullAware": "''"
+    },
+    {
+      "name": "nullAware",
+      "type": "String",
+      "internalType": "Empty",
+      "internalName": "",
+      "nullAware": "''"
+    }
+  ],
+  "searchTerm": "name",
+  "toString": "name",
+  "moreCode": "bool get hasNullAware => nullAware.isNotEmpty;"
+}

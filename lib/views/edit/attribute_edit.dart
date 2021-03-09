@@ -5,7 +5,7 @@ import 'package:folly_fields/fields/string_field.dart';
 import 'package:folly_fields/util/string_utils.dart';
 import 'package:model_code_generator/consumers/attribute_consumer.dart';
 import 'package:model_code_generator/models/attribute_model.dart';
-import 'package:model_code_generator/models/attribute_type.dart';
+import 'package:model_code_generator/models/attribute_type_model.dart';
 import 'package:model_code_generator/models/attribute_type_config.dart';
 import 'package:model_code_generator/util/config.dart';
 import 'package:model_code_generator/views/builders/attribute_builder.dart';
@@ -62,14 +62,17 @@ class AttributeEdit
         items: Config().attributeConfig.map(
             (AttributeType key, AttributeTypeConfig value) =>
                 MapEntry<AttributeType, String>(key, value.name)),
-        initialValue: model.type,
+        initialValue: model.type.value,
         onChanged: (AttributeType? value) {
-          model.type = value!;
+          model.type.value = value!;
           refresh(true);
         },
-        validator: (AttributeType? value) =>
-            value == null ? 'Type is required.' : null,
-        onSaved: (AttributeType? value) => model.type = value!,
+        validator: (AttributeType? value) => value == null ||
+                value == AttributeType.Unknown ||
+                value == AttributeType.Empty
+            ? 'Type is required.'
+            : null,
+        onSaved: (AttributeType? value) => model.type.value = value!,
       ),
 
       /// Internal Type
@@ -78,21 +81,21 @@ class AttributeEdit
         label: 'Internal Type*',
         enabled: typeConfig.hasInternalType,
         items: Config().attributeInternalTypeItems,
-        initialValue: model.internalType,
+        initialValue: model.internalType.value,
         onChanged: (AttributeType? value) {
-          model.internalType = value!;
+          model.internalType = AttributeTypeModel(value: value!);
           refresh(true);
         },
         validator: (AttributeType? value) =>
             value == null ? 'Internal Type is required.' : null,
-        onSaved: (AttributeType? value) => model.internalType = value!,
+        onSaved: (AttributeType? value) => model.internalType.value = value!,
       ),
 
       /// Internal Name
       StringField(
         prefix: prefix,
         label: 'Internal Name*',
-        enabled: typeConfig.hasName ||internalTypeConfig.hasName,
+        enabled: typeConfig.hasName || internalTypeConfig.hasName,
         initialValue: model.internalName,
         validator: (String value) => StringUtils.isPascalCase(value)
             ? null

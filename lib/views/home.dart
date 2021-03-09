@@ -15,7 +15,7 @@ import 'package:model_code_generator/consumers/attribute_consumer.dart';
 import 'package:model_code_generator/languages/abstract_language.dart';
 import 'package:model_code_generator/models/attribute_model.dart';
 import 'package:model_code_generator/models/entity_model.dart';
-import 'package:model_code_generator/languages/language_type.dart';
+import 'package:model_code_generator/models/language_type_model.dart';
 import 'package:model_code_generator/util/config.dart';
 import 'package:model_code_generator/views/builders/attribute_builder.dart';
 import 'package:model_code_generator/views/edit/attribute_edit.dart';
@@ -90,12 +90,14 @@ class _HomeState extends State<Home> {
                       /// Language
                       DropdownField<LanguageType>(
                         label: 'Language*',
-                        items: LanguageTypeHelper.languageItems,
-                        initialValue: entity.languageType,
+                        items: LanguageTypeModel.getItems(),
+                        initialValue: entity.languageType.value,
                         validator: (LanguageType? value) =>
-                            value == null ? 'Language is required.' : null,
-                        onSaved: (LanguageType? value) =>
-                            entity.languageType = value!,
+                            value == null || value == LanguageType.Unknown
+                                ? 'Language is required.'
+                                : null,
+                        onSaved: (LanguageType? value) => entity.languageType =
+                            LanguageTypeModel(value: value!),
                       ),
 
                       /// Package Path
@@ -170,6 +172,27 @@ class _HomeState extends State<Home> {
                         validator: (String value) =>
                             value.isEmpty ? 'toString() is required.' : null,
                         onSaved: (String value) => entity.modelToString = value,
+                      ),
+
+                      /// More Code
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: TextFormField(
+                          decoration: InputDecoration(
+                            labelText: 'More Code',
+                            border: OutlineInputBorder(),
+                            counterText: '',
+                          ),
+                          initialValue: entity.moreCode,
+                          keyboardType: TextInputType.multiline,
+                          onSaved: (String? value) =>
+                              entity.moreCode = value ?? '',
+                          minLines: 1,
+                          maxLines: 999,
+                          style: GoogleFonts.firaCode(),
+                          enableSuggestions: false,
+                          autocorrect: false,
+                        ),
                       ),
 
                       /// Process
@@ -290,7 +313,7 @@ class _HomeState extends State<Home> {
 
     _formKey.currentState!.save();
 
-    AbstractLanguage language = Config().languages[entity.languageType]!;
+    AbstractLanguage language = Config().languages[entity.languageType.value]!;
 
     _codeController.text = language.getModelClass(entity);
 

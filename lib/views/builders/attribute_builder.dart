@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:folly_fields/crud/abstract_ui_builder.dart';
 import 'package:model_code_generator/models/attribute_model.dart';
+import 'package:model_code_generator/util/config.dart';
 
 ///
 ///
@@ -35,6 +36,7 @@ class AttributeBuilder extends AbstractUIBuilder<AttributeModel> {
   ///
   @override
   Widget getSubtitle(AttributeModel model) => Text(
-        model.textType + (model.hasNullAware ? ' (${model.nullAware})' : ''),
+        Config().textType(model) +
+            (model.hasNullAware ? ' (${model.nullAware})' : ''),
       );
 }
