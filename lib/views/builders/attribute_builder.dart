@@ -7,7 +7,7 @@ import 'package:model_code_generator/util/config.dart';
 ///
 ///
 ///
-class AttributeBuilder extends AbstractUIBuilder<AttributeModel> {
+class AttributeBuilder extends AbstractUIBuilder<int, AttributeModel> {
   ///
   ///
   ///

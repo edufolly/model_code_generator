@@ -132,11 +132,11 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "v0.1.0"
-      resolved-ref: "54e85dc9e1c1e98303d091b0a5b6a70e14cd6cf5"
+      ref: "v0.1.2"
+      resolved-ref: "42fd418ff2180c03f4cc48bdfd27703ec12f03e9"
       url: "git://github.com/edufolly/folly_fields.git"
     source: git
-    version: "0.1.0+27"
+    version: "0.1.2+29"
   font_awesome_flutter:
     dependency: "direct main"
     description:
@@ -269,7 +269,7 @@ packages:
       name: shared_preferences
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.0.3"
+    version: "2.0.4"
   shared_preferences_linux:
     dependency: transitive
     description:

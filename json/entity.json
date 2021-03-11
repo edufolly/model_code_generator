@@ -2,6 +2,7 @@
   "name": "Entity",
   "languageType": "Dart",
   "packagePath": "model_code_generator/models",
+  "idType": "Integer",
   "attributes": [
     {
       "name": "name",
@@ -15,7 +16,7 @@
       "type": "Model",
       "internalName": "LanguageType",
       "internalType": "Empty",
-      "nullAware": "LanguageType.Dart"
+      "nullAware": "LanguageTypeModel(value: LanguageType.Dart)"
     },
     {
       "name": "packagePath",
@@ -25,9 +26,16 @@
       "nullAware": "''"
     },
     {
+      "name": "idType",
+      "type": "Model",
+      "internalType": "Empty",
+      "internalName": "AttributeType",
+      "nullAware": "AttributeTypeModel(value: AttributeType.Integer)"
+    },
+    {
       "name": "attributes",
       "type": "List",
-      "internalName": "AttributeModel",
+      "internalName": "Attribute",
       "internalType": "Model",
       "nullAware": "[]"
     },

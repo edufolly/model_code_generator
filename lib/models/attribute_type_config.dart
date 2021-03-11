@@ -3,7 +3,7 @@ import 'package:folly_fields/crud/abstract_model.dart';
 ///
 ///
 ///
-class AttributeTypeConfig extends AbstractModel {
+class AttributeTypeConfig extends AbstractModel<int> {
   final String name;
   final bool hasInternalType;
   final bool hasName;

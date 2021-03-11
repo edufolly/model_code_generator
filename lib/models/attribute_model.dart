@@ -4,7 +4,7 @@ import 'package:model_code_generator/models/attribute_type_model.dart';
 ///
 ///
 ///
-class AttributeModel extends AbstractModel {
+class AttributeModel extends AbstractModel<int> {
   String name = '';
   AttributeTypeModel type = AttributeTypeModel(value: AttributeType.String);
   AttributeTypeModel internalType =

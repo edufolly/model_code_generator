@@ -2,6 +2,7 @@
   "name": "Attribute",
   "languageType": "Dart",
   "packagePath": "model_code_generator/models",
+  "idType": "Integer",
   "attributes": [
     {
       "name": "name",

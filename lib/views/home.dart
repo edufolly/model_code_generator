@@ -14,6 +14,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:model_code_generator/consumers/attribute_consumer.dart';
 import 'package:model_code_generator/languages/abstract_language.dart';
 import 'package:model_code_generator/models/attribute_model.dart';
+import 'package:model_code_generator/models/attribute_type_config.dart';
+import 'package:model_code_generator/models/attribute_type_model.dart';
 import 'package:model_code_generator/models/entity_model.dart';
 import 'package:model_code_generator/models/language_type_model.dart';
 import 'package:model_code_generator/util/config.dart';
@@ -120,8 +122,24 @@ class _HomeState extends State<Home> {
                         onSaved: (String value) => entity.name = value,
                       ),
 
+                      /// Id Type
+                      DropdownField<AttributeType>(
+                        label: 'Id Type*',
+                        items: Config().attributeConfig.map((AttributeType key,
+                                AttributeTypeConfig value) =>
+                            MapEntry<AttributeType, String>(key, value.name)),
+                        initialValue: entity.idType.value,
+                        validator: (AttributeType? value) => value == null ||
+                                value == AttributeType.Unknown ||
+                                value == AttributeType.Empty
+                            ? 'Type is required.'
+                            : null,
+                        onSaved: (AttributeType? value) =>
+                            entity.idType.value = value!,
+                      ),
+
                       /// Attributes
-                      ListField<AttributeModel, AttributeBuilder>(
+                      ListField<int, AttributeModel, AttributeBuilder>(
                         initialValue: entity.attributes,
                         uiBuilder: AttributeBuilder(''),
                         routeAddBuilder: (

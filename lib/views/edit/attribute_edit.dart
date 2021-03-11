@@ -14,7 +14,7 @@ import 'package:model_code_generator/views/builders/attribute_builder.dart';
 ///
 ///
 class AttributeEdit
-    extends AbstractEdit<AttributeModel, AttributeBuilder, AttributeConsumer> {
+    extends AbstractEdit<int, AttributeModel, AttributeBuilder, AttributeConsumer> {
   ///
   ///
   ///

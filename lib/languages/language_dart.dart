@@ -107,11 +107,13 @@ class LanguageDart extends AbstractLanguage {
 
     code += imports.join();
 
+    String idType = typeNames[entity.idType] ?? 'int';
+
     code += '\n';
     code += '///\n';
     code += '///\n';
     code += '///\n';
-    code += 'class $className extends AbstractModel {\n';
+    code += 'class $className extends AbstractModel<$idType> {\n';
     for (AttributeModel attribute in entity.attributes) {
       code += '  ${langType(attribute)}';
 
