@@ -8,7 +8,6 @@ import 'package:folly_fields/fields/list_field.dart';
 import 'package:folly_fields/fields/string_field.dart';
 import 'package:folly_fields/util/string_utils.dart';
 import 'package:folly_fields/widgets/circular_waiting.dart';
-import 'package:folly_fields/widgets/folly_dialogs.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:model_code_generator/consumers/attribute_consumer.dart';
@@ -22,6 +21,7 @@ import 'package:model_code_generator/util/config.dart';
 import 'package:model_code_generator/views/builders/attribute_builder.dart';
 import 'package:model_code_generator/views/edit/attribute_edit.dart';
 import 'package:model_code_generator/views/json_import.dart';
+import 'package:model_code_generator/widgets/version_widget.dart';
 
 ///
 ///
@@ -50,7 +50,18 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Model Code Generator'),
+        title: Row(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: <Widget>[
+            Text('Model Code Generator'),
+            DefaultTextStyle(
+                style: TextStyle(fontSize: 12.0, color: Colors.white38),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: VersionWidget(),
+                )),
+          ],
+        ),
         actions: <Widget>[
           IconButton(
             icon: Icon(FontAwesomeIcons.solidCopy),
@@ -290,11 +301,12 @@ class _HomeState extends State<Home> {
     bool process = await _process();
     if (process && _codeController.text.isNotEmpty) {
       await Clipboard.setData(ClipboardData(text: _codeController.text));
-      // TODO - Better message.
-      await FollyDialogs.dialogMessage(
-        context: context,
-        title: 'Copied!',
-        message: 'Code copied to clipboard.',
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Code copied to clipboard.',
+          ),
+        ),
       );
     }
   }

@@ -14,6 +14,9 @@ jobs:
           channel: 'beta'
       - run: flutter config --enable-web
       - run: flutter pub get
+      - run: |
+          version=$(grep 'version:' pubspec.yaml | cut -c 10-)
+          printf "%s" "$version" >assets/version.txt
       - run: flutter build web
       - run: |
           cd build/web

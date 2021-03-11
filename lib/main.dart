@@ -35,6 +35,13 @@ class ModelCodeGenerator extends StatelessWidget {
         brightness: Brightness.dark,
         accentColor: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
+        snackBarTheme: ThemeData.dark().snackBarTheme.copyWith(
+              backgroundColor: Colors.blue,
+              contentTextStyle: TextStyle(
+                color: Colors.white,
+                fontSize: 16.0,
+              ),
+            ),
       ),
       home: Home(),
       localizationsDelegates: <LocalizationsDelegate<dynamic>>[

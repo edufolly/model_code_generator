@@ -105,11 +105,12 @@ class _JsonImportState extends State<JsonImport> {
   void _copyToClipboard() async {
     if (_jsonController.text.isNotEmpty) {
       await Clipboard.setData(ClipboardData(text: _jsonController.text));
-      // TODO - better message.
-      await FollyDialogs.dialogMessage(
-        context: context,
-        title: 'Copied!',
-        message: 'Json copied to clipboard.',
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'JSON copied to clipboard.',
+          ),
+        ),
       );
     }
   }
