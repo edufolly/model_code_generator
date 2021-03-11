@@ -3,7 +3,7 @@ description: A model code generator project.
 
 publish_to: 'none'
 
-version: 0.0.12+12
+version: 0.0.13+13
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
@@ -26,7 +26,7 @@ dependencies:
   folly_fields:
     git:
       url: git://github.com/edufolly/folly_fields.git
-      ref: v0.1.2
+      ref: v0.1.3
 
 dev_dependencies:
   flutter_test:

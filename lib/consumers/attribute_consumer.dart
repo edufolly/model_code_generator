@@ -4,7 +4,7 @@ import 'package:model_code_generator/models/attribute_model.dart';
 ///
 ///
 ///
-class AttributeConsumer extends BaseConsumerMock<int, AttributeModel> {
+class AttributeConsumer extends BaseConsumerMock<AttributeModel> {
   ///
   ///
   ///

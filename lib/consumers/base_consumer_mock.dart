@@ -5,8 +5,8 @@ import 'package:folly_fields/crud/abstract_model.dart';
 ///
 ///
 ///
-abstract class BaseConsumerMock<A, T extends AbstractModel<A>>
-    extends AbstractConsumer<A, T> {
+abstract class BaseConsumerMock<T extends AbstractModel<Object>>
+    extends AbstractConsumer<T> {
   ///
   ///
   ///
