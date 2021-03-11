@@ -87,25 +87,39 @@ class _HomeState extends State<Home> {
         ],
       ),
       body: Padding(
-        padding: const EdgeInsets.all(18.0),
+        padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Flexible(
-                flex: 1,
-                child: SingleChildScrollView(
-                  child: _getConfigWidget(),
+          child: MediaQuery.of(context).size.width < 950
+              ? SingleChildScrollView(
+                  child: Column(
+                    children: <Widget>[
+                      ..._getConfigWidget(),
+                      _getCodeWidget(),
+                    ],
+                  ),
+                )
+              : Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Flexible(
+                      flex: 1,
+                      child: Scrollbar(
+                        child: SingleChildScrollView(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: _getConfigWidget(),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Flexible(
+                      flex: 1,
+                      child: _getCodeWidget(),
+                    ),
+                  ],
                 ),
-              ),
-              Flexible(
-                flex: 1,
-                child: _getCodeWidget(),
-              ),
-            ],
-          ),
         ),
       ),
     );
@@ -114,143 +128,140 @@ class _HomeState extends State<Home> {
   ///
   ///
   ///
-  Widget _getConfigWidget() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: <Widget>[
-        /// Language
-        DropdownField<LanguageType>(
-          label: 'Language*',
-          items: LanguageTypeModel.getItems(),
-          initialValue: entity.languageType.value,
-          validator: (LanguageType? value) =>
-              value == null || value == LanguageType.Unknown
-                  ? 'Language is required.'
-                  : null,
-          onSaved: (LanguageType? value) =>
-              entity.languageType = LanguageTypeModel(value: value!),
-        ),
+  List<Widget> _getConfigWidget() {
+    return <Widget>[
+      /// Language
+      DropdownField<LanguageType>(
+        label: 'Language*',
+        items: LanguageTypeModel.getItems(),
+        initialValue: entity.languageType.value,
+        validator: (LanguageType? value) =>
+            value == null || value == LanguageType.Unknown
+                ? 'Language is required.'
+                : null,
+        onSaved: (LanguageType? value) =>
+            entity.languageType = LanguageTypeModel(value: value!),
+      ),
 
-        /// Package Path
-        StringField(
-          label: 'Package Path*',
-          initialValue: entity.packagePath,
-          validator: (String value) =>
-              value.isEmpty ? 'Package Path is required.' : null,
-          onSaved: (String value) => entity.packagePath = value,
-        ),
+      /// Package Path
+      StringField(
+        label: 'Package Path*',
+        initialValue: entity.packagePath,
+        validator: (String value) =>
+            value.isEmpty ? 'Package Path is required.' : null,
+        onSaved: (String value) => entity.packagePath = value,
+      ),
 
-        /// Name
-        StringField(
-          label: 'Model Class Name*',
-          initialValue: entity.name,
-          validator: (String value) => StringUtils.isPascalCase(value)
-              ? null
-              : 'Model Class Name is invalid. Use PascalCase.',
-          onSaved: (String value) => entity.name = value,
-        ),
+      /// Name
+      StringField(
+        label: 'Model Class Name*',
+        initialValue: entity.name,
+        validator: (String value) => StringUtils.isPascalCase(value)
+            ? null
+            : 'Model Class Name is invalid. Use PascalCase.',
+        onSaved: (String value) => entity.name = value,
+      ),
 
-        /// Id Type
-        DropdownField<AttributeType>(
-          label: 'Id Type*',
-          items: Config().attributeConfig.map(
-              (AttributeType key, AttributeTypeConfig value) =>
-                  MapEntry<AttributeType, String>(key, value.name)),
-          initialValue: entity.idType.value,
-          validator: (AttributeType? value) => value == null ||
-                  value == AttributeType.Unknown ||
-                  value == AttributeType.Empty
-              ? 'Type is required.'
-              : null,
-          onSaved: (AttributeType? value) => entity.idType.value = value!,
-        ),
+      /// Id Type
+      DropdownField<AttributeType>(
+        label: 'Id Type*',
+        items: Config().attributeConfig.map(
+            (AttributeType key, AttributeTypeConfig value) =>
+                MapEntry<AttributeType, String>(key, value.name)),
+        initialValue: entity.idType.value,
+        validator: (AttributeType? value) => value == null ||
+                value == AttributeType.Unknown ||
+                value == AttributeType.Empty
+            ? 'Type is required.'
+            : null,
+        onSaved: (AttributeType? value) => entity.idType.value = value!,
+      ),
 
-        /// Attributes
-        ListField<AttributeModel, AttributeBuilder>(
-          initialValue: entity.attributes,
-          uiBuilder: AttributeBuilder(''),
-          routeAddBuilder: (
-            BuildContext context,
-            AttributeBuilder uiBuilder,
-          ) =>
-              AttributeEdit(
-            AttributeModel(),
-            uiBuilder,
-            AttributeConsumer(),
-            true,
+      /// Attributes
+      ListField<AttributeModel, AttributeBuilder>(
+        initialValue: entity.attributes,
+        uiBuilder: AttributeBuilder(''),
+        routeAddBuilder: (
+          BuildContext context,
+          AttributeBuilder uiBuilder,
+        ) =>
+            AttributeEdit(
+          AttributeModel(),
+          uiBuilder,
+          AttributeConsumer(),
+          true,
+        ),
+        routeEditBuilder: (
+          BuildContext context,
+          AttributeModel model,
+          AttributeBuilder uiBuilder,
+          bool edit,
+        ) =>
+            AttributeEdit(
+          model,
+          uiBuilder,
+          AttributeConsumer(),
+          edit,
+        ),
+        validator: (List<AttributeModel> value) =>
+            value.isEmpty ? 'Attributes are required.' : null,
+        onSaved: (List<AttributeModel> value) => entity.attributes = value,
+        addText: 'Add %s',
+        removeText: 'Remove %s?',
+        emptyListText: 'No %s.',
+      ),
+
+      /// Search Term
+      StringField(
+        label: 'Search Term*',
+        initialValue: entity.modelSearchTerm,
+        validator: (String value) =>
+            value.isEmpty ? 'Search Term is required.' : null,
+        onSaved: (String value) => entity.modelSearchTerm = value,
+      ),
+
+      /// toString()
+      StringField(
+        label: 'toString()*',
+        initialValue: entity.modelToString,
+        validator: (String value) =>
+            value.isEmpty ? 'toString() is required.' : null,
+        onSaved: (String value) => entity.modelToString = value,
+      ),
+
+      /// More Code
+      Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: TextFormField(
+          decoration: InputDecoration(
+            labelText: 'More Code',
+            border: OutlineInputBorder(),
+            counterText: '',
           ),
-          routeEditBuilder: (
-            BuildContext context,
-            AttributeModel model,
-            AttributeBuilder uiBuilder,
-            bool edit,
-          ) =>
-              AttributeEdit(
-            model,
-            uiBuilder,
-            AttributeConsumer(),
-            edit,
-          ),
-          validator: (List<AttributeModel> value) =>
-              value.isEmpty ? 'Attributes are required.' : null,
-          onSaved: (List<AttributeModel> value) => entity.attributes = value,
-          addText: 'Add %s',
-          removeText: 'Remove %s?',
-          emptyListText: 'No %s.',
+          initialValue: entity.moreCode,
+          keyboardType: TextInputType.multiline,
+          onSaved: (String? value) => entity.moreCode = value ?? '',
+          minLines: 1,
+          maxLines: 999,
+          style: GoogleFonts.firaCode(),
+          enableSuggestions: false,
+          autocorrect: false,
         ),
+      ),
 
-        /// Search Term
-        StringField(
-          label: 'Search Term*',
-          initialValue: entity.modelSearchTerm,
-          validator: (String value) =>
-              value.isEmpty ? 'Search Term is required.' : null,
-          onSaved: (String value) => entity.modelSearchTerm = value,
-        ),
-
-        /// toString()
-        StringField(
-          label: 'toString()*',
-          initialValue: entity.modelToString,
-          validator: (String value) =>
-              value.isEmpty ? 'toString() is required.' : null,
-          onSaved: (String value) => entity.modelToString = value,
-        ),
-
-        /// More Code
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: TextFormField(
-            decoration: InputDecoration(
-              labelText: 'More Code',
-              border: OutlineInputBorder(),
-              counterText: '',
-            ),
-            initialValue: entity.moreCode,
-            keyboardType: TextInputType.multiline,
-            onSaved: (String? value) => entity.moreCode = value ?? '',
-            minLines: 1,
-            maxLines: 999,
-            style: GoogleFonts.firaCode(),
-            enableSuggestions: false,
-            autocorrect: false,
-          ),
-        ),
-
-        /// Process
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: ElevatedButton.icon(
-            onPressed: _process,
-            icon: Icon(Icons.send),
-            label: Text('GENERATE'),
-            style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.all(20.0),
-            ),
+      /// Process
+      Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: ElevatedButton.icon(
+          onPressed: _process,
+          icon: Icon(Icons.send),
+          label: Text('GENERATE'),
+          style: ElevatedButton.styleFrom(
+            padding: const EdgeInsets.all(20.0),
           ),
         ),
-      ],
-    );
+      ),
+    ];
   }
 
   ///
@@ -259,24 +270,26 @@ class _HomeState extends State<Home> {
   Widget _getCodeWidget() {
     return Padding(
       padding: const EdgeInsets.all(8.0),
-      child: TextFormField(
-        decoration: InputDecoration(
-          labelText: 'Code',
-          border: OutlineInputBorder(),
-          counterText: '',
-        ),
-        controller: _codeController,
-        keyboardType: TextInputType.multiline,
-        minLines: 1,
-        maxLines: 999,
-        style: GoogleFonts.firaCode(),
-        enableSuggestions: false,
-        autocorrect: false,
-        toolbarOptions: ToolbarOptions(
-          copy: true,
-          cut: false,
-          paste: false,
-          selectAll: true,
+      child: Scrollbar(
+        child: TextFormField(
+          decoration: InputDecoration(
+            labelText: 'Code',
+            border: OutlineInputBorder(),
+            counterText: '',
+          ),
+          controller: _codeController,
+          keyboardType: TextInputType.multiline,
+          minLines: 1,
+          maxLines: 999,
+          style: GoogleFonts.firaCode(),
+          enableSuggestions: false,
+          autocorrect: false,
+          toolbarOptions: ToolbarOptions(
+            copy: true,
+            cut: false,
+            paste: false,
+            selectAll: true,
+          ),
         ),
       ),
     );
