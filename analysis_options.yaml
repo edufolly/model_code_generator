@@ -1,11 +1,5 @@
 include: package:pedantic/analysis_options.yaml
 
-#analyzer:
-#  exclude:
-#    - lib/generated/protos/*
-#  strong-mode:
-#    implicit-casts: false
-
 linter:
   rules:
     always_specify_types: true

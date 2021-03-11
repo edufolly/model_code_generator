@@ -3,6 +3,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:folly_fields/folly_fields.dart';
 import 'package:model_code_generator/views/home.dart';
 import 'package:model_code_generator/util/config.dart';
+import 'package:url_strategy/url_strategy.dart';
 
 ///
 ///
@@ -15,6 +16,8 @@ void main() {
   WidgetsFlutterBinding.ensureInitialized();
 
   FollyFields.start(Config(), debug: debug);
+
+  setPathUrlStrategy();
 
   runApp(ModelCodeGenerator());
 }
