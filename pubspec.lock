@@ -132,11 +132,11 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "v0.1.3"
-      resolved-ref: "23cf5a724785ccb16332b61aef0df6b7e0fb52a1"
+      ref: "v0.1.4"
+      resolved-ref: "3936d4f10034898e1a707bbf65e86c9f8be2a4e1"
       url: "git://github.com/edufolly/folly_fields.git"
     source: git
-    version: "0.1.3+30"
+    version: "0.1.4+31"
   font_awesome_flutter:
     dependency: "direct main"
     description:
