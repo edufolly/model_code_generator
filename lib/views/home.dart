@@ -230,23 +230,16 @@ class _HomeState extends State<Home> {
       ),
 
       /// More Code
-      Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: TextFormField(
-          decoration: InputDecoration(
-            labelText: 'More Code',
-            border: OutlineInputBorder(),
-            counterText: '',
-          ),
-          initialValue: entity.moreCode,
-          keyboardType: TextInputType.multiline,
-          onSaved: (String? value) => entity.moreCode = value ?? '',
-          minLines: 1,
-          maxLines: 999,
-          style: GoogleFonts.firaCode(),
-          enableSuggestions: false,
-          autocorrect: false,
-        ),
+      StringField(
+        label: 'More Code',
+        initialValue: entity.moreCode,
+        keyboard: TextInputType.multiline,
+        onSaved: (String? value) => entity.moreCode = value ?? '',
+        minLines: 1,
+        maxLines: 999,
+        style: GoogleFonts.firaCode(),
+        enableSuggestions: false,
+        autocorrect: false,
       ),
 
       /// Process
