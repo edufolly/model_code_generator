@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:folly_fields/fields/dropdown_field.dart';
 import 'package:folly_fields/fields/list_field.dart';
+import 'package:folly_fields/fields/multiline_field.dart';
 import 'package:folly_fields/fields/string_field.dart';
 import 'package:folly_fields/util/string_utils.dart';
 import 'package:folly_fields/widgets/circular_waiting.dart';
@@ -74,7 +75,6 @@ class _HomeState extends State<Home> {
           Padding(
             padding: const EdgeInsets.all(14.0),
             child: ElevatedButton(
-              child: Text('JSON'),
               onPressed: _jsonImport,
               style: ElevatedButton.styleFrom(
                 primary: Theme.of(context).colorScheme.onSurface,
@@ -82,6 +82,7 @@ class _HomeState extends State<Home> {
                 elevation: 0.0,
                 textStyle: TextStyle(fontWeight: FontWeight.bold),
               ),
+              child: Text('JSON'),
             ),
           ),
         ],
@@ -230,16 +231,11 @@ class _HomeState extends State<Home> {
       ),
 
       /// More Code
-      StringField(
+      MultilineField(
         label: 'More Code',
         initialValue: entity.moreCode,
-        keyboard: TextInputType.multiline,
         onSaved: (String? value) => entity.moreCode = value ?? '',
-        minLines: 1,
-        maxLines: 999,
         style: GoogleFonts.firaCode(),
-        enableSuggestions: false,
-        autocorrect: false,
       ),
 
       /// Process
@@ -260,33 +256,41 @@ class _HomeState extends State<Home> {
   ///
   ///
   ///
-  Widget _getCodeWidget() {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Scrollbar(
-        child: TextFormField(
-          decoration: InputDecoration(
-            labelText: 'Code',
-            border: OutlineInputBorder(),
-            counterText: '',
-          ),
-          controller: _codeController,
-          keyboardType: TextInputType.multiline,
-          minLines: 1,
-          maxLines: 999,
-          style: GoogleFonts.firaCode(),
-          enableSuggestions: false,
-          autocorrect: false,
-          toolbarOptions: ToolbarOptions(
-            copy: true,
-            cut: false,
-            paste: false,
-            selectAll: true,
-          ),
-        ),
-      ),
-    );
-  }
+  Widget _getCodeWidget() => MultilineField(
+        label: 'Code',
+        controller: _codeController,
+        style: GoogleFonts.firaCode(),
+      );
+
+  // {
+  //
+  //
+  //   return Padding(
+  //     padding: const EdgeInsets.all(8.0),
+  //     child: Scrollbar(
+  //       child: TextFormField(
+  //         decoration: InputDecoration(
+  //           labelText: 'Code',
+  //           border: OutlineInputBorder(),
+  //           counterText: '',
+  //         ),
+  //         controller: _codeController,
+  //         keyboardType: TextInputType.multiline,
+  //         minLines: 1,
+  //         maxLines: 999,
+  //         style: GoogleFonts.firaCode(),
+  //         enableSuggestions: false,
+  //         autocorrect: false,
+  //         toolbarOptions: ToolbarOptions(
+  //           copy: true,
+  //           cut: false,
+  //           paste: false,
+  //           selectAll: true,
+  //         ),
+  //       ),
+  //     ),
+  //   );
+  // }
 
   ///
   ///
